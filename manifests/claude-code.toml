@@ -1,0 +1,37 @@
+# Reference manifest for Claude Code.
+#
+# Claude Code is shipped as an IN-TREE adapter in v1 (see
+# internal/platform/claudecode/adapter.go) because its wiring needs custom
+# logic: a JSON settings merge with backup/restore semantics that the
+# generic manifest interpreter does not yet support (json-env wiring is
+# planned for the manifest schema in v2).
+#
+# This file exists so the manifest schema has at least one real-world
+# example to validate against, and so a future contributor can see what an
+# equivalent manifest-only definition would look like once json-env wiring
+# lands. It is NOT loaded by the registry in v1 (internal/platform/registry.go
+# only loads manifests with wiring.shell_env or wiring.toml).
+
+id           = "claude-code"
+display_name = "Claude Code"
+wire         = "anthropic"
+
+[detect]
+binary       = "claude"
+config_paths = ["~/.claude/settings.json"]
+
+[config_target]
+type = "json-env" # NOTE: not yet implemented by the generic manifestAdapter; see adapter.go
+path = "~/.claude/settings.json"
+
+[roles]
+heavy    = "agentroute-heavy"
+balanced = "agentroute-balanced"
+fast     = "agentroute-fast"
+
+[wiring.json_env]
+"env.ANTHROPIC_BASE_URL"            = "{{gateway_url}}"
+"env.ANTHROPIC_AUTH_TOKEN"          = "{{auth_token}}"
+"env.ANTHROPIC_DEFAULT_OPUS_MODEL"   = "{{roles.heavy}}"
+"env.ANTHROPIC_DEFAULT_SONNET_MODEL" = "{{roles.balanced}}"
+"env.ANTHROPIC_DEFAULT_HAIKU_MODEL"  = "{{roles.fast}}"

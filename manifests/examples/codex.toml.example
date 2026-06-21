@@ -1,0 +1,35 @@
+# EXAMPLE manifest — not registered/shipped/enabled in v1.
+#
+# Demonstrates that the manifest schema generalizes to a tool with a
+# completely different wire protocol (OpenAI) and a completely different
+# config format (TOML file, not JSON) than Claude Code (Anthropic/JSON).
+#
+# Codex CLI reads ~/.codex/config.toml. Project-local .codex/config.toml
+# files ignore model_provider(s) keys, so this MUST target the user-level
+# file. See developers.openai.com/codex/config-reference.
+#
+# Rename to codex.toml and move into manifests/ to enable once the Codex
+# OpenAI-wire translator (internal/gateway/openai_native.go) is wired to a
+# real platform adapter for it — tracked as a v1.x / v2 follow-up, not v1.
+
+id           = "codex"
+display_name = "Codex CLI"
+wire         = "openai"
+
+[detect]
+binary       = "codex"
+config_paths = ["~/.codex/config.toml"]
+
+[config_target]
+type = "toml"
+path = "~/.codex/config.toml"
+
+[roles]
+balanced = "agentroute-balanced"
+
+[wiring.toml]
+"model_providers.agentroute.name"     = "AgentRoute"
+"model_providers.agentroute.base_url" = "{{gateway_url}}/v1"
+"model_providers.agentroute.env_key"  = "AGENTROUTE_TOKEN"
+"model_provider"                      = "agentroute"
+"model"                                = "{{roles.balanced}}"

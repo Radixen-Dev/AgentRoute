@@ -1,0 +1,81 @@
+version: 2
+
+project_name: agentroute
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: agentroute
+    main: ./cmd/agentroute
+    binary: agentroute
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X github.com/Radixen-Dev/AgentRoute/internal/version.Version={{.Version}}
+      - -X github.com/Radixen-Dev/AgentRoute/internal/version.Commit={{.Commit}}
+      - -X github.com/Radixen-Dev/AgentRoute/internal/version.Date={{.Date}}
+
+archives:
+  - id: agentroute-archive
+    formats: [tar.gz]
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+
+checksum:
+  name_template: "checksums.txt"
+
+signs:
+  - cmd: cosign
+    certificate: "${artifact}.pem"
+    args:
+      - sign-blob
+      - "--output-certificate=${certificate}"
+      - "--output-signature=${signature}"
+      - "${artifact}"
+      - --yes
+    artifacts: checksum
+
+brews:
+  - name: agentroute
+    repository:
+      owner: Radixen-Dev
+      name: homebrew-agentroute
+    directory: Formula
+    homepage: "https://github.com/Radixen-Dev/AgentRoute"
+    description: "Route Claude Code (and friends) through OpenRouter with a modern, animated TUI."
+    license: "GPL-3.0-only"
+
+scoops:
+  - name: agentroute
+    repository:
+      owner: Radixen-Dev
+      name: scoop-agentroute
+    homepage: "https://github.com/Radixen-Dev/AgentRoute"
+    description: "Route Claude Code (and friends) through OpenRouter with a modern, animated TUI."
+    license: "GPL-3.0-only"
+
+release:
+  github:
+    owner: Radixen-Dev
+    name: AgentRoute
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"

@@ -1,0 +1,32 @@
+site_name: AgentRoute
+site_description: Route Claude Code (and friends) through OpenRouter with a modern, animated TUI.
+site_url: https://radixen-dev.github.io/AgentRoute/
+repo_url: https://github.com/Radixen-Dev/AgentRoute
+repo_name: Radixen-Dev/AgentRoute
+
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: teal
+      accent: indigo
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - content.code.copy
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Concepts: concepts.md
+  - CLI Reference: cli.md
+  - Platforms & Plugins: plugins.md
+  - Branding: branding.md
+  - Troubleshooting: troubleshooting.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true

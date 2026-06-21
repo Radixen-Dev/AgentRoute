@@ -1,0 +1,34 @@
+# EXAMPLE manifest — not registered/shipped/enabled in v1.
+#
+# Demonstrates the third wire protocol (Gemini) and the third config
+# mechanism (pure shell/process environment variables, no config file
+# write at all) that the manifest schema must span.
+#
+# Gemini CLI reads GEMINI_BASE_URL / GEMINI_API_KEY / GEMINI_MODEL (and
+# GEMINI_API_KEY_HEADER, default x-goog-api-key) from the process
+# environment. See geminicli.com/docs/reference/configuration.
+#
+# "shell_env" wiring means Link() does not edit a file at all — it must
+# instead instruct the user (or a shell-hook adapter) to export these vars,
+# OR launch the tool itself with an augmented environment. The exact UX for
+# shell_env wiring (env-file vs. direct export vs. wrapper script) is an
+# open design question for whoever enables this manifest — track it as a
+# follow-up before enabling, do not guess silently.
+
+id           = "gemini-cli"
+display_name = "Gemini CLI"
+wire         = "gemini"
+
+[detect]
+binary = "gemini"
+
+[config_target]
+type = "shell-env"
+
+[roles]
+balanced = "agentroute-balanced"
+
+[wiring.shell_env]
+GEMINI_BASE_URL = "{{gateway_url}}"
+GEMINI_API_KEY  = "{{auth_token}}"
+GEMINI_MODEL    = "{{roles.balanced}}"
