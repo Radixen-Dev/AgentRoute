@@ -23,6 +23,7 @@ func withIsolatedState(t *testing.T) string {
 	dir := t.TempDir()
 	t.Setenv("APPDATA", dir)
 	t.Setenv("XDG_CONFIG_HOME", dir)
+	t.Setenv("HOME", dir)
 	return dir
 }
 

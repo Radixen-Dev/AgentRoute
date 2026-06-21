@@ -18,6 +18,7 @@ func withIsolatedState(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("APPDATA", dir)
 	t.Setenv("XDG_CONFIG_HOME", dir)
+	t.Setenv("HOME", dir)
 }
 
 // repoManifest reads a file relative to this package's source tree, so

@@ -54,6 +54,7 @@ func fakeSupervisor(t *testing.T) (*Supervisor, int) {
 	dir := t.TempDir()
 	t.Setenv("APPDATA", dir)
 	t.Setenv("XDG_CONFIG_HOME", dir)
+	t.Setenv("HOME", dir)
 
 	port := freePort(t)
 	s := &Supervisor{
@@ -115,6 +116,7 @@ func TestSupervisorStartUnknownBinaryReturnsErrBinaryNotFound(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("APPDATA", dir)
 	t.Setenv("XDG_CONFIG_HOME", dir)
+	t.Setenv("HOME", dir)
 
 	s := &Supervisor{Binary: "agentroute-litellm-does-not-exist"}
 	err := s.Start(context.Background(), writeEmptyConfig(t), freePort(t))
@@ -127,6 +129,7 @@ func TestSupervisorStartTimesOutIfNeverHealthy(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("APPDATA", dir)
 	t.Setenv("XDG_CONFIG_HOME", dir)
+	t.Setenv("HOME", dir)
 
 	// Re-exec this test binary without AGENTROUTE_FAKE_LITELLM set, so it
 	// just runs the real test suite and exits almost immediately instead

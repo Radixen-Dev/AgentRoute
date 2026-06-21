@@ -10,8 +10,11 @@ import (
 )
 
 func TestLoadDefaultsWhenMissing(t *testing.T) {
-	t.Setenv("APPDATA", t.TempDir())
-	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
+	dir := t.TempDir()
+	t.Setenv("APPDATA", dir)
+	t.Setenv("XDG_CONFIG_HOME", dir)
+	t.Setenv("HOME", dir)
+	t.Setenv("HOME", dir)
 
 	cfg, err := Load()
 	if err != nil {
@@ -29,6 +32,7 @@ func TestSaveLoadRoundTrip(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("APPDATA", dir)
 	t.Setenv("XDG_CONFIG_HOME", dir)
+	t.Setenv("HOME", dir)
 
 	want := Config{ActiveProfile: "work", Port: 5000, ReduceMotion: true}
 	if err := Save(want); err != nil {
@@ -51,6 +55,7 @@ func TestConfigFileHasRestrictivePerms(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("APPDATA", dir)
 	t.Setenv("XDG_CONFIG_HOME", dir)
+	t.Setenv("HOME", dir)
 
 	if err := Save(Config{Port: DefaultPort}); err != nil {
 		t.Fatalf("Save: %v", err)

@@ -63,4 +63,9 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
-          version: latest
+          # .golangci.yml uses the v2 config schema (top-level "version: 2",
+          # linters.default, a separate formatters section) — golangci-lint
+          # v1 rejects it with a config-validation error, and this action's
+          # "latest" resolves to a cached v1.x binary, not the actual
+          # latest release. Pin to an actual v2 release explicitly.
+          version: v2.12.2

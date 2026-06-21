@@ -55,6 +55,7 @@ func withIsolatedStateDir(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("APPDATA", dir)
 	t.Setenv("XDG_CONFIG_HOME", dir)
+	t.Setenv("HOME", dir)
 }
 
 func TestEnvVarAlwaysWins(t *testing.T) {

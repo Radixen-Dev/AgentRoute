@@ -12,6 +12,7 @@ func TestRootCreatesDirectory(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("APPDATA", dir)
 	t.Setenv("XDG_CONFIG_HOME", dir)
+	t.Setenv("HOME", dir)
 
 	root, err := Root()
 	if err != nil {
@@ -30,6 +31,7 @@ func TestSubdirsNestUnderRoot(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("APPDATA", dir)
 	t.Setenv("XDG_CONFIG_HOME", dir)
+	t.Setenv("HOME", dir)
 
 	root, err := Root()
 	if err != nil {
@@ -57,6 +59,7 @@ func TestLinkStateFileIsPerPlatform(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("APPDATA", dir)
 	t.Setenv("XDG_CONFIG_HOME", dir)
+	t.Setenv("HOME", dir)
 
 	a, err := LinkStateFile("claude-code")
 	if err != nil {

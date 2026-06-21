@@ -30,6 +30,7 @@ func withIsolatedState(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("APPDATA", dir)
 	t.Setenv("XDG_CONFIG_HOME", dir)
+	t.Setenv("HOME", dir)
 }
 
 // fakePlatform is a minimal platform.Platform that never touches a real

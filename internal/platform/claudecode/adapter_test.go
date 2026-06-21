@@ -22,6 +22,7 @@ func withIsolatedState(t *testing.T) {
 	dir := t.TempDir()
 	t.Setenv("APPDATA", dir)
 	t.Setenv("XDG_CONFIG_HOME", dir)
+	t.Setenv("HOME", dir)
 }
 
 // newTestAdapter returns an Adapter pointed at a settings.json path inside
