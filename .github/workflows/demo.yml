@@ -17,7 +17,17 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install VHS
-        uses: charmbracelet/vhs-action@v2
+        # charmbracelet/vhs-action's bundled ffmpeg installer has been
+        # broken since 2025-03 (charmbracelet/vhs-action#459: it matches a
+        # BtbN/FFmpeg-Builds asset-name series that's no longer published,
+        # and the fix is still an open, unmerged PR as of this writing).
+        # Installing from Charm's own apt repo sidesteps that installer
+        # entirely and pulls ffmpeg/ttyd as normal apt dependencies.
+        run: |
+          curl -fsSL https://repo.charm.sh/apt/gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/charm.gpg
+          echo "deb [signed-by=/usr/share/keyrings/charm.gpg] https://repo.charm.sh/apt/ * *" | sudo tee /etc/apt/sources.list.d/charm.list
+          sudo apt-get update
+          sudo apt-get install -y vhs ffmpeg ttyd
 
       - name: Set up Go
         uses: actions/setup-go@v5
