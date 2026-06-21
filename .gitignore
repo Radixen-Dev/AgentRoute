@@ -6,8 +6,8 @@
 *.dll
 *.so
 *.dylib
-agentroute
-agentroute.exe
+/agentroute
+/agentroute.exe
 
 # Go
 *.test
