@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   vhs:
@@ -45,14 +46,15 @@ jobs:
             PATH="$PWD/bin:$PATH" vhs "$tape"
           done
 
-      - name: Commit regenerated GIFs
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/demo/*.gif
-          if ! git diff --cached --quiet; then
-            git commit -m "chore(demo): regenerate demo gifs [skip ci]"
-            git push
-          else
-            echo "No demo changes to commit."
-          fi
+      - name: Open PR with regenerated GIFs
+        # main requires a PR (branch protection), so the bot can't push
+        # directly even though it authored the commit — open a PR instead
+        # and let the normal review/merge flow pick it up.
+        uses: peter-evans/create-pull-request@v7
+        with:
+          add-paths: docs/demo/*.gif
+          commit-message: "chore(demo): regenerate demo gifs"
+          branch: chore/regenerate-demo-gifs
+          title: "chore(demo): regenerate demo gifs"
+          body: Automated update from the `tapes/*.tape` VHS scripts.
+          delete-branch: true

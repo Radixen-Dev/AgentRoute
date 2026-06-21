@@ -7,6 +7,10 @@ on:
 
 permissions:
   contents: write
+  # cosign's keyless "sign-blob" needs Actions' OIDC token to obtain a
+  # short-lived signing certificate from Fulcio; without this permission
+  # the token isn't issued and the GoReleaser sign step fails.
+  id-token: write
 
 jobs:
   goreleaser:
