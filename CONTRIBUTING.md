@@ -23,6 +23,10 @@ make run     # build and launch the TUI
 
 For the v1 Anthropic translation path you also need a `litellm` install reachable on `PATH` (`pipx install litellm`) and an `OPENROUTER_API_KEY` exported. Run `agentroute doctor` to check your environment.
 
+## Updating the demo GIFs
+
+`make demo` renders `tapes/*.tape` (via [VHS](https://github.com/charmbracelet/vhs)) into `docs/demo/*.gif`. CI's `demo.yml` re-renders the tapes on every push to `tapes/**` as a regression test for the render pipeline, but it only uploads the result as a build artifact — it never commits, because this repo doesn't grant Actions permission to open PRs. If a TUI screen or a tape script changes in a way that should update the GIFs, run `make demo` locally and include the regenerated files in your PR.
+
 ## Adding a platform adapter
 
 Most tools should be addable **without writing Go code**, via a TOML manifest (see `manifests/claude-code.toml` and the worked examples in `manifests/examples/`). A manifest declares:

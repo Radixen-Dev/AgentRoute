@@ -8,8 +8,7 @@ on:
   workflow_dispatch: {}
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
   vhs:
@@ -46,15 +45,15 @@ jobs:
             PATH="$PWD/bin:$PATH" vhs "$tape"
           done
 
-      - name: Open PR with regenerated GIFs
-        # main requires a PR (branch protection), so the bot can't push
-        # directly even though it authored the commit — open a PR instead
-        # and let the normal review/merge flow pick it up.
-        uses: peter-evans/create-pull-request@v7
+      - name: Upload rendered GIFs
+        # This workflow is a regression test for the render pipeline
+        # (vhs/ffmpeg/ttyd install + the agentroute build + tape syntax),
+        # not an auto-publish step: main requires a PR (branch protection),
+        # and this repo doesn't grant Actions permission to open PRs, so
+        # there's no permission-escalation-free way to land a commit from
+        # here. A maintainer regenerates GIFs locally with `make demo` and
+        # commits them through the normal PR flow — see CONTRIBUTING.md.
+        uses: actions/upload-artifact@v4
         with:
-          add-paths: docs/demo/*.gif
-          commit-message: "chore(demo): regenerate demo gifs"
-          branch: chore/regenerate-demo-gifs
-          title: "chore(demo): regenerate demo gifs"
-          body: Automated update from the `tapes/*.tape` VHS scripts.
-          delete-branch: true
+          name: demo-gifs
+          path: docs/demo/*.gif
