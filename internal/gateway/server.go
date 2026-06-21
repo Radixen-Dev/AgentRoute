@@ -69,7 +69,7 @@ func New(cfg Config) (*Server, error) {
 	}
 
 	router := chi.NewRouter()
-	router.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
+	router.Get("/healthz", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("ok"))
 	})

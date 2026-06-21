@@ -96,8 +96,12 @@ func TestUpFullLifecycleLinksAndCleansUpOnCancel(t *testing.T) {
 	}
 	waitForCondition(t, 3*time.Second, func() bool {
 		client := &http.Client{Timeout: 300 * time.Millisecond}
-		_, err := client.Get("http://127.0.0.1:" + strconv.Itoa(st.SidecarPort) + "/health/liveliness")
-		return err != nil
+		resp, err := client.Get("http://127.0.0.1:" + strconv.Itoa(st.SidecarPort) + "/health/liveliness")
+		if err != nil {
+			return true
+		}
+		_ = resp.Body.Close()
+		return false
 	})
 }
 

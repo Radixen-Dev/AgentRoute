@@ -27,7 +27,7 @@ func newProfilesListCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "list",
 		Short: "List saved profiles",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			p := newPrinter(cmd)
 			profiles, err := profile.List()
 			if err != nil {

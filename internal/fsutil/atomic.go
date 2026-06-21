@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
+
 // Package fsutil provides small filesystem helpers used wherever AgentRoute
 // must write state or edit a third-party config file safely.
 package fsutil

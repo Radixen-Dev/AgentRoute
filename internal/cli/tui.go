@@ -15,7 +15,7 @@ func newTUICmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "tui",
 		Short: "Launch the interactive TUI",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(*cobra.Command, []string) error {
 			return tui.Run(tui.DefaultServices())
 		},
 	}

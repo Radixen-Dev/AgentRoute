@@ -20,6 +20,7 @@ import (
 // State is the lifecycle state of a supervised sidecar process.
 type State string
 
+// The lifecycle states a Supervisor reports via State().
 const (
 	StateStopped  State = "stopped"
 	StateStarting State = "starting"
@@ -116,7 +117,7 @@ func (s *Supervisor) Start(ctx context.Context, configPath string, port int) err
 	setProcAttrs(cmd)
 
 	if err := cmd.Start(); err != nil {
-		logFile.Close()
+		_ = logFile.Close()
 		s.mu.Unlock()
 		return fmt.Errorf("sidecar: start %s: %w", binary, err)
 	}
@@ -155,7 +156,7 @@ func (s *Supervisor) Start(ctx context.Context, configPath string, port int) err
 // intentional Stop or a crash. It runs exactly once per Start call.
 func (s *Supervisor) reap(cmd *exec.Cmd, logFile *os.File, done chan struct{}) {
 	err := cmd.Wait()
-	logFile.Close()
+	_ = logFile.Close()
 
 	s.mu.Lock()
 	if s.stopping {
@@ -180,7 +181,7 @@ func (s *Supervisor) waitHealthy(ctx context.Context, port int, timeout time.Dur
 	for {
 		req, _ := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 		if resp, err := client.Do(req); err == nil {
-			resp.Body.Close()
+			_ = resp.Body.Close()
 			if resp.StatusCode == http.StatusOK {
 				return nil
 			}

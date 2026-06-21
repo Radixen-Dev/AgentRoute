@@ -60,7 +60,7 @@ func TestAnthropicRouteRewritesModelAndAuthenticatesToSidecar(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Do: %v", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("got status %d, want 200", resp.StatusCode)
 	}
@@ -106,7 +106,7 @@ func TestAnthropicRouteCountTokensSubpathReachesHandler(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Do: %v", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("got status %d, want 200", resp.StatusCode)
 	}
@@ -119,7 +119,7 @@ func TestAnthropicRouteStreamsSSEInOrderWithoutHopByHopLeak(t *testing.T) {
 		"event: content_block_delta\ndata: {\"delta\":\"lo\"}\n\n",
 		"event: message_stop\ndata: {}\n\n",
 	}
-	sidecar := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	sidecar := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "text/event-stream")
 		w.Header().Set("Transfer-Encoding", "chunked")
 		w.WriteHeader(http.StatusOK)
@@ -142,7 +142,7 @@ func TestAnthropicRouteStreamsSSEInOrderWithoutHopByHopLeak(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Do: %v", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("got status %d, want 200", resp.StatusCode)
 	}
@@ -161,7 +161,7 @@ func TestAnthropicRouteStreamsSSEInOrderWithoutHopByHopLeak(t *testing.T) {
 }
 
 func TestAnthropicRouteUnknownAliasNeverReachesSidecar(t *testing.T) {
-	sidecar := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	sidecar := httptest.NewServer(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {
 		t.Fatalf("sidecar should never be called for an unmapped alias")
 	}))
 	defer sidecar.Close()
@@ -177,7 +177,7 @@ func TestAnthropicRouteUnknownAliasNeverReachesSidecar(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Do: %v", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusBadGateway {
 		t.Fatalf("got status %d, want 502", resp.StatusCode)
 	}
@@ -199,7 +199,7 @@ func TestAnthropicRouteSidecarDownReturnsBadGateway(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Do: %v", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusBadGateway {
 		t.Fatalf("got status %d, want 502", resp.StatusCode)
 	}

@@ -100,7 +100,7 @@ func TestStartReturnsRunningGatewayLinkedAndHealthy(t *testing.T) {
 	if err != nil {
 		t.Fatalf("healthz: %v", err)
 	}
-	resp.Body.Close()
+	_ = resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("healthz status = %d, want 200", resp.StatusCode)
 	}
@@ -129,8 +129,12 @@ func TestStopUnlinksStopsSidecarAndShutsDownGateway(t *testing.T) {
 	waitForCondition(t, 3*time.Second, func() bool { return sup.State() == sidecar.StateStopped })
 	waitForCondition(t, 3*time.Second, func() bool {
 		client := &http.Client{Timeout: 300 * time.Millisecond}
-		_, err := client.Get("http://127.0.0.1:" + strconv.Itoa(sidecarPort) + "/health/liveliness")
-		return err != nil
+		resp, err := client.Get("http://127.0.0.1:" + strconv.Itoa(sidecarPort) + "/health/liveliness")
+		if err != nil {
+			return true
+		}
+		_ = resp.Body.Close()
+		return false
 	})
 
 	// A second Stop must be a no-op, not a double-unwind panic/error.

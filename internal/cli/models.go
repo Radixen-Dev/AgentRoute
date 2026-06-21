@@ -15,16 +15,14 @@ import (
 
 // newOpenRouterClient is a test seam: tests reassign it to point at an
 // httptest.Server instead of the real OpenRouter API.
-var newOpenRouterClient = func(apiKey string) *openrouter.Client {
-	return openrouter.NewClient(apiKey)
-}
+var newOpenRouterClient = openrouter.NewClient
 
 func newModelsCmd() *cobra.Command {
 	var filter string
 	cmd := &cobra.Command{
 		Use:   "models",
 		Short: "List the OpenRouter model catalog",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			p := newPrinter(cmd)
 
 			key, _, err := secret.OpenRouterAPIKey()

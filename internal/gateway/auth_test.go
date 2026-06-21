@@ -27,7 +27,7 @@ func TestGenerateTokenIsRandomAndNonEmpty(t *testing.T) {
 
 func TestRequireBearerRejectsMissingAndWrongToken(t *testing.T) {
 	mw := RequireBearer("correct-token")
-	handler := mw(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := mw(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
 

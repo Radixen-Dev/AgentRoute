@@ -53,6 +53,7 @@ func New(services Services, skipSplash bool) Model {
 	return m
 }
 
+// Init implements tea.Model.
 func (m Model) Init() tea.Cmd {
 	if m.booting {
 		return m.splash.tickCmd()
@@ -71,6 +72,7 @@ func (m *Model) initScreen(id ScreenID) tea.Cmd {
 	return m.screen.Init()
 }
 
+// Update implements tea.Model.
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch typed := msg.(type) {
 	case tea.WindowSizeMsg:
@@ -176,6 +178,7 @@ func (m *Model) handleGlobalKey(msg tea.KeyMsg) (tea.Cmd, bool) {
 	return nil, false
 }
 
+// View implements tea.Model.
 func (m Model) View() string {
 	if m.width == 0 || m.height == 0 {
 		return ""
@@ -196,7 +199,7 @@ func (m Model) View() string {
 	return zone.Scan(view)
 }
 
-func globalHints(km KeyMap, screenBindings []key.Binding) []keyHint {
+func globalHints(_ KeyMap, screenBindings []key.Binding) []keyHint {
 	hints := []keyHint{
 		{key: "?", label: "help"},
 		{key: "q", label: "quit"},

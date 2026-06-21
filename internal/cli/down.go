@@ -14,7 +14,7 @@ func newDownCmd() *cobra.Command {
 			"Ctrl+C in its own terminal, which already unlinks cleanly on the way " +
 			"out. Use `down` when that didn't happen (crash, closed terminal) and " +
 			"Claude Code may still be pointed at a gateway that is no longer running.",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			p := newPrinter(cmd)
 
 			adapter := newClaudeCodeAdapter()

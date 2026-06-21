@@ -139,6 +139,9 @@ func TestProfileAliasesKeysAllTiers(t *testing.T) {
 	// fails to compile after a refactor, the conversion site in the "up"
 	// orchestration (gateway.MapRouter(p.Aliases())) needs an explicit fix
 	// too.
+	//nolint:staticcheck // explicit type is intentional: a type conversion
+	// (which the suggested fix would require) is assignable even across
+	// distinct named types, silently defeating the guard described above.
 	var _ map[string]string = got
 
 	want := map[string]string{

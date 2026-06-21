@@ -305,7 +305,7 @@ func TestLinkAndUnlinkAgainstFakeRunningGateway(t *testing.T) {
 	settingsPath := withFakeClaudeAdapter(t)
 	seedProfile(t, "work")
 
-	healthy := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	healthy := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
 	defer healthy.Close()
@@ -366,7 +366,7 @@ func TestExitCodeTable(t *testing.T) {
 			name:  "unknown platform",
 			args:  []string{"unlink", "ghost-tool"},
 			want:  ExitUsage,
-			setup: func(t *testing.T) {},
+			setup: func(*testing.T) {},
 		},
 	}
 	for _, c := range cases {

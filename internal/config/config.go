@@ -20,9 +20,10 @@ import (
 // the gateway picks the next free port automatically (see gateway.PickPort).
 const DefaultPort = 4505
 
-// ActiveProfile is the name of the profile to use when none is specified
-// via --profile. Stored as "" until the user activates one.
+// Config is AgentRoute's own persisted application configuration.
 type Config struct {
+	// ActiveProfile is the name of the profile to use when none is
+	// specified via --profile. Stored as "" until the user activates one.
 	ActiveProfile string `toml:"active_profile"`
 	Port          int    `toml:"port"`
 	ReduceMotion  bool   `toml:"reduce_motion"`

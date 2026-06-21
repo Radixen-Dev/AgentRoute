@@ -14,7 +14,7 @@ import (
 // renderHelpOverlay draws the full keymap (global + the active screen's
 // own bindings + the numbered screen jump list) centered over a dimmed
 // background, toggled by "?" anywhere (plan §7.2 screen 9 / §7.3).
-func renderHelpOverlay(s theme.Styles, width, height int, km KeyMap, active Screen) string {
+func renderHelpOverlay(s theme.Styles, width, height int, _ KeyMap, active Screen) string {
 	var b strings.Builder
 	b.WriteString(s.CardTitle.Render("Keymap"))
 	b.WriteString("\n\n")
@@ -32,7 +32,7 @@ func renderHelpOverlay(s theme.Styles, width, height int, km KeyMap, active Scre
 		{"1..7", "jump to screen"},
 	}
 	for _, r := range rows {
-		b.WriteString(fmt.Sprintf("  %s  %s\n", s.HelpKey.Render(pad(r.key, 16)), s.Help.Render(r.label)))
+		_, _ = fmt.Fprintf(&b, "  %s  %s\n", s.HelpKey.Render(pad(r.key, 16)), s.Help.Render(r.label))
 	}
 
 	if bindings := active.Bindings(); len(bindings) > 0 {
@@ -41,7 +41,7 @@ func renderHelpOverlay(s theme.Styles, width, height int, km KeyMap, active Scre
 		b.WriteString("\n\n")
 		for _, bd := range bindings {
 			keys := strings.Join(bd.Keys(), "/")
-			b.WriteString(fmt.Sprintf("  %s  %s\n", s.HelpKey.Render(pad(keys, 16)), s.Help.Render(bd.Help().Desc)))
+			_, _ = fmt.Fprintf(&b, "  %s  %s\n", s.HelpKey.Render(pad(keys, 16)), s.Help.Render(bd.Help().Desc))
 		}
 	}
 
@@ -49,7 +49,7 @@ func renderHelpOverlay(s theme.Styles, width, height int, km KeyMap, active Scre
 	b.WriteString(s.CardTitle.Render("Screens"))
 	b.WriteString("\n\n")
 	for i, id := range screenOrder {
-		b.WriteString(fmt.Sprintf("  %s  %s\n", s.HelpKey.Render(pad(fmt.Sprintf("%d", i+1), 16)), s.Help.Render(titleFor(id))))
+		_, _ = fmt.Fprintf(&b, "  %s  %s\n", s.HelpKey.Render(pad(fmt.Sprintf("%d", i+1), 16)), s.Help.Render(titleFor(id)))
 	}
 
 	card := s.Card.Render(b.String())

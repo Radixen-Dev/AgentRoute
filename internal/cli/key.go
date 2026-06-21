@@ -33,7 +33,7 @@ func newKeySetCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "set",
 		Short: "Store an OpenRouter API key in the OS keyring (or a 0600 file fallback)",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			p := newPrinter(cmd)
 
 			switch {
@@ -72,7 +72,7 @@ func newKeyClearCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "clear",
 		Short: "Remove the stored OpenRouter API key from the keyring and file fallback",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			p := newPrinter(cmd)
 			if err := secret.ClearOpenRouterAPIKey(); err != nil {
 				return err
@@ -90,7 +90,7 @@ func newKeyStatusCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "status",
 		Short: "Show whether an OpenRouter API key is configured, and where it came from",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			p := newPrinter(cmd)
 			key, source, err := secret.OpenRouterAPIKey()
 			if err != nil {

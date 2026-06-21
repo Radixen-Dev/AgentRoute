@@ -48,12 +48,12 @@ signs:
       - --yes
     artifacts: checksum
 
-brews:
+homebrew_casks:
   - name: agentroute
     repository:
       owner: Radixen-Dev
       name: homebrew-agentroute
-    directory: Formula
+    directory: Casks
     homepage: "https://github.com/Radixen-Dev/AgentRoute"
     description: "Route Claude Code (and friends) through OpenRouter with a modern, animated TUI."
     license: "GPL-3.0-only"

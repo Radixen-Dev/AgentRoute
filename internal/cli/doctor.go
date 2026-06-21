@@ -24,7 +24,7 @@ func newDoctorCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "doctor",
 		Short: "Check the local environment for everything `agentroute up` needs",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			p := newPrinter(cmd)
 			checks := runDoctorChecks(cmd.Context())
 

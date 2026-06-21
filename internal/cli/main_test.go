@@ -31,7 +31,7 @@ func runFakeLiteLLM() {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/health/liveliness", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/health/liveliness", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
 	srv := &http.Server{Addr: "127.0.0.1:" + *port, Handler: mux}

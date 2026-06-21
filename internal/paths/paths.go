@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
+
 // Package paths resolves AgentRoute's own state directories.
 //
 // AgentRoute never writes its own state into a linked tool's config

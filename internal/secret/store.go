@@ -52,6 +52,8 @@ var backend keyringBackend = realKeyring{}
 // `agentroute doctor`) can report it accurately.
 type Source string
 
+// The possible Source values OpenRouterAPIKey and SetOpenRouterAPIKey
+// report, in precedence order (env wins over keyring wins over file).
 const (
 	SourceEnv     Source = "env"
 	SourceKeyring Source = "keyring"

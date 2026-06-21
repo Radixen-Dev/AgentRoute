@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
+
 // Package version holds build-time metadata injected via -ldflags by goreleaser.
 package version
 

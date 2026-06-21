@@ -32,12 +32,12 @@ func (p *printer) JSON(v any) error {
 // this when p.json is false; commands check p.json before choosing which
 // of JSON/Line to call.
 func (p *printer) Line(format string, args ...any) {
-	fmt.Fprintf(p.out, format+"\n", args...)
+	_, _ = fmt.Fprintf(p.out, format+"\n", args...)
 }
 
 // Errf writes a human-readable diagnostic line to stderr. Always goes to
 // stderr regardless of --json, per the plain-mode contract: machine output
 // is stdout-only.
 func (p *printer) Errf(format string, args ...any) {
-	fmt.Fprintf(p.errw, format+"\n", args...)
+	_, _ = fmt.Fprintf(p.errw, format+"\n", args...)
 }

@@ -93,7 +93,7 @@ func (r *Running) Done() <-chan error { return r.serveErrCh }
 // Stop tears down everything Start built, in reverse order: unlink (if
 // linked) -> stop gateway -> stop sidecar -> remove rendered config. Safe
 // to call more than once; only the first call does anything.
-func (r *Running) Stop(ctx context.Context) {
+func (r *Running) Stop(_ context.Context) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if r.stopped {
@@ -254,6 +254,6 @@ func pickFreePort() (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	defer ln.Close()
+	defer func() { _ = ln.Close() }()
 	return ln.Addr().(*net.TCPAddr).Port, nil
 }

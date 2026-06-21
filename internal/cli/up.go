@@ -40,7 +40,7 @@ func newUpCmd() *cobra.Command {
 			"AgentRoute does not daemonize: keep this terminal open, or run it under " +
 			"your own process supervisor (systemd, launchd, Windows Task Scheduler) " +
 			"if you want it to survive logout.",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx, stop := signal.NotifyContext(cmd.Context(), os.Interrupt, syscall.SIGTERM)
 			defer stop()
 			return runUp(ctx, newPrinter(cmd), orchestrator.Options{
@@ -85,7 +85,7 @@ func runUp(ctx context.Context, p *printer, opts orchestrator.Options, deps orch
 	}); err != nil {
 		return withExitCode(ExitGatewayFailed, err)
 	}
-	defer removeGatewayState()
+	defer func() { _ = removeGatewayState() }()
 
 	if p.json {
 		_ = p.JSON(map[string]any{

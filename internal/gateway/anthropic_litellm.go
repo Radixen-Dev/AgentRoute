@@ -63,7 +63,7 @@ func (t *AnthropicLiteLLMTranslator) Handler(_ Upstream, router ModelRouter, log
 		// this handler serves, so ErrorHandler/ModifyResponse must not be
 		// reassigned per-request (concurrent requests would race on those
 		// fields). Status is captured instead via statusRecorder below.
-		ErrorHandler: func(w http.ResponseWriter, r *http.Request, err error) {
+		ErrorHandler: func(w http.ResponseWriter, _ *http.Request, err error) {
 			http.Error(w, fmt.Sprintf("sidecar request failed: %v", err), http.StatusBadGateway)
 		},
 	}

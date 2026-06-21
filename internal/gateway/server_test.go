@@ -33,7 +33,7 @@ func startTestServer(t *testing.T, upstreamURL, token string) *Server {
 }
 
 func TestOpenAIRouteRequiresBearer(t *testing.T) {
-	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {
 		t.Fatalf("upstream should never be called when auth fails")
 	}))
 	defer upstream.Close()
@@ -45,7 +45,7 @@ func TestOpenAIRouteRequiresBearer(t *testing.T) {
 	if err != nil {
 		t.Fatalf("POST: %v", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusUnauthorized {
 		t.Fatalf("got status %d, want 401", resp.StatusCode)
 	}
@@ -80,7 +80,7 @@ func TestOpenAIRouteRewritesAliasAndForwards(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Do: %v", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("got status %d, want 200", resp.StatusCode)
 	}
@@ -121,7 +121,7 @@ func TestOpenAIRouteStreamsChunkedSSEInOrder(t *testing.T) {
 		"data: {\"choices\":[{\"delta\":{\"content\":\"world\"}}]}\n\n",
 		"data: [DONE]\n\n",
 	}
-	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "text/event-stream")
 		// An upstream streaming response is unbounded; Go only omits
 		// Content-Length automatically when nothing forces buffering. Set
@@ -148,7 +148,7 @@ func TestOpenAIRouteStreamsChunkedSSEInOrder(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Do: %v", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("got status %d, want 200", resp.StatusCode)
 	}
@@ -176,7 +176,7 @@ func TestOpenAIRouteStreamsChunkedSSEInOrder(t *testing.T) {
 }
 
 func TestOpenAIRouteUnknownAliasReturnsBadGateway(t *testing.T) {
-	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {
 		t.Fatalf("upstream should never be called for an unmapped alias")
 	}))
 	defer upstream.Close()
@@ -192,14 +192,14 @@ func TestOpenAIRouteUnknownAliasReturnsBadGateway(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Do: %v", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusBadGateway {
 		t.Fatalf("got status %d, want 502", resp.StatusCode)
 	}
 }
 
 func TestHealthzDoesNotRequireAuth(t *testing.T) {
-	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+	upstream := httptest.NewServer(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}))
 	defer upstream.Close()
 
 	srv := startTestServer(t, upstream.URL, "expected-token")
@@ -207,7 +207,7 @@ func TestHealthzDoesNotRequireAuth(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Get: %v", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("got status %d, want 200", resp.StatusCode)
 	}

@@ -40,7 +40,7 @@ func runFakeLiteLLM() {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/health/liveliness", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/health/liveliness", func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
 	srv := &http.Server{Addr: "127.0.0.1:" + *port, Handler: mux}
@@ -103,10 +103,11 @@ func TestSupervisorStopTerminatesTheProcess(t *testing.T) {
 	client := &http.Client{Timeout: 500 * time.Millisecond}
 	deadline := time.Now().Add(3 * time.Second)
 	for time.Now().Before(deadline) {
-		_, err := client.Get("http://127.0.0.1:" + strconv.Itoa(port) + "/health/liveliness")
+		resp, err := client.Get("http://127.0.0.1:" + strconv.Itoa(port) + "/health/liveliness")
 		if err != nil {
 			return // connection refused/reset: process is gone, as expected.
 		}
+		_ = resp.Body.Close()
 		time.Sleep(50 * time.Millisecond)
 	}
 	t.Fatalf("sidecar still answering health checks 3s after Stop")
@@ -151,7 +152,7 @@ func writeEmptyConfig(t *testing.T) string {
 	if err != nil {
 		t.Fatalf("CreateTemp: %v", err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	return f.Name()
 }
 
@@ -161,6 +162,6 @@ func freePort(t *testing.T) int {
 	if err != nil {
 		t.Fatalf("net.Listen: %v", err)
 	}
-	defer ln.Close()
+	defer func() { _ = ln.Close() }()
 	return ln.Addr().(*net.TCPAddr).Port
 }

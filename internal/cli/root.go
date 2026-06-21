@@ -21,7 +21,7 @@ func New() *cobra.Command {
 		Short:         "Route Claude Code (and, later, other coding agents) through OpenRouter via a local gateway",
 		SilenceErrors: true,
 		SilenceUsage:  true,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
 			if !shouldAutoLaunchTUI() {
 				return cmd.Help()
 			}

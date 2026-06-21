@@ -12,6 +12,8 @@ import "net/http"
 // Wire identifies which API wire format a Translator serves.
 type Wire string
 
+// The wire formats AgentRoute's gateway can serve. Each one needs a
+// Translator registered before any platform using it can be linked.
 const (
 	WireAnthropic Wire = "anthropic"
 	WireOpenAI    Wire = "openai"

@@ -87,7 +87,7 @@ func (t *OpenAINativeTranslator) Handler(upstream Upstream, router ModelRouter, 
 			}
 			return
 		}
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 
 		copyResponseHeaders(w.Header(), resp.Header)
 		w.WriteHeader(resp.StatusCode)

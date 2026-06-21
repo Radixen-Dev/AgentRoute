@@ -50,7 +50,7 @@ func TestAnthropicRoutePatternMatchesMessagesAndCountTokens(t *testing.T) {
 		if err != nil {
 			t.Fatalf("POST %s: %v", p, err)
 		}
-		resp.Body.Close()
+		_ = resp.Body.Close()
 		if resp.StatusCode != http.StatusOK {
 			t.Errorf("POST %s: got status %d, want 200 (route did not match)", p, resp.StatusCode)
 		}

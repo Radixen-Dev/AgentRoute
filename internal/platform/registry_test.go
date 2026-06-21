@@ -80,7 +80,7 @@ path = "~/.claude/settings.json"
 `)
 
 	var logged []string
-	adapters, err := LoadManifestAdapters(dir, func(format string, args ...any) {
+	adapters, err := LoadManifestAdapters(dir, func(format string, _ ...any) {
 		logged = append(logged, format)
 	})
 	if err != nil {

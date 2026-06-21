@@ -13,6 +13,8 @@ import (
 // destination you navigate to.
 type ScreenID int
 
+// The seven navigable screens, in the order screenOrder (below) maps to
+// the global keymap's number-key jump bindings.
 const (
 	ScreenDashboard ScreenID = iota
 	ScreenModelPicker
