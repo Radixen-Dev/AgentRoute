@@ -1,4 +1,7 @@
-# Every file in this repository requires review from both codeowners
-# before a pull request can be merged. See CONTRIBUTING.md for the
-# fork -> branch -> PR workflow required of all contributors.
-* @Gesso64 @Dborasik
+# Every file in this repository requires review from a codeowner before a
+# pull request can be merged. See CONTRIBUTING.md for the fork -> branch ->
+# PR workflow required of all contributors.
+#
+# Currently just @Dborasik; @Gesso64 to be added back once they have
+# collaborator access (see plan §10 for the original 2-reviewer intent).
+* @Dborasik

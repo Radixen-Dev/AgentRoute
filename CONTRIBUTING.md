@@ -8,7 +8,7 @@ Thanks for considering a contribution. AgentRoute uses a strict fork-based workf
 2. Branch off `main` in your fork: `git checkout -b feat/my-change`.
 3. Make your change. Add or update tests. Update docs if behavior changed.
 4. Open a pull request against `Radixen-Dev/AgentRoute:main`.
-5. **Two approvals from CODEOWNERS** (`@Gesso64` and `@Dborasik`, see [.github/CODEOWNERS](.github/CODEOWNERS)) are required before merge, and CI must be green.
+5. **One approval from a CODEOWNER** (currently just `@Dborasik`; see [.github/CODEOWNERS](.github/CODEOWNERS)) is required before merge, and CI must be green. The original intent was two CODEOWNERS — that goes back into effect once `@Gesso64` has collaborator access.
 
 ## Local development
 
