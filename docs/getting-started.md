@@ -2,7 +2,20 @@
 
 ## 1. Install
 
-Build from source until prebuilt binaries are published (see the [README](https://github.com/Radixen-Dev/AgentRoute#installation)):
+**Homebrew (macOS/Linux):**
+
+```sh
+brew install --cask Radixen-Dev/agentroute/agentroute
+```
+
+**Scoop (Windows):**
+
+```sh
+scoop bucket add agentroute https://github.com/Radixen-Dev/scoop-agentroute
+scoop install agentroute
+```
+
+**Build from source:**
 
 ```sh
 git clone https://github.com/Radixen-Dev/AgentRoute.git
