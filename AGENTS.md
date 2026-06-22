@@ -87,9 +87,9 @@ The entrypoint is `cmd/agentroute/main.go`. When in doubt, `go doc` and grep bea
 ## Verifying your work
 
 ```sh
-make build   # go build ./cmd/agentroute
+make build   # outputs bin/agentroute
 make test    # go test -race ./...
-make lint    # golangci-lint run (CI uses the pinned version in .golangci.yml; match it locally)
+make lint    # golangci-lint run (CI uses the pinned version in .github/workflows/ci.yml; match it locally)
 make run     # build and launch the TUI
 make demo    # regenerate docs/demo/*.gif from tapes/*.tape (only if you touched a TUI screen or a tape)
 ```
