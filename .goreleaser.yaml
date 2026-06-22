@@ -53,6 +53,10 @@ homebrew_casks:
     repository:
       owner: Radixen-Dev
       name: homebrew-agentroute
+      # The default GITHUB_TOKEN is scoped to this repo only and can't
+      # write to a sibling repo — use a PAT with contents:write on
+      # homebrew-agentroute instead.
+      token: "{{ .Env.TAP_GITHUB_TOKEN }}"
     directory: Casks
     homepage: "https://github.com/Radixen-Dev/AgentRoute"
     description: "Route Claude Code (and friends) through OpenRouter with a modern, animated TUI."
@@ -63,6 +67,8 @@ scoops:
     repository:
       owner: Radixen-Dev
       name: scoop-agentroute
+      # Same cross-repo write problem as the homebrew cask above.
+      token: "{{ .Env.TAP_GITHUB_TOKEN }}"
     homepage: "https://github.com/Radixen-Dev/AgentRoute"
     description: "Route Claude Code (and friends) through OpenRouter with a modern, animated TUI."
     license: "GPL-3.0-only"
