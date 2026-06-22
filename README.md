@@ -80,9 +80,18 @@ See [docs/getting-started.md](docs/getting-started.md) for the full walkthrough,
 ## Installation
 
 Prebuilt binaries for Windows, macOS, and Linux (amd64/arm64) are published on the
-[Releases page](https://github.com/Radixen-Dev/AgentRoute/releases) once v0.1.0 ships, alongside a
-Homebrew tap (`Radixen-Dev/homebrew-agentroute`) and a Scoop bucket (`Radixen-Dev/scoop-agentroute`).
-Until then, build from source:
+[Releases page](https://github.com/Radixen-Dev/AgentRoute/releases).
+
+```sh
+# Homebrew (macOS/Linux)
+brew install --cask Radixen-Dev/agentroute/agentroute
+
+# Scoop (Windows)
+scoop bucket add agentroute https://github.com/Radixen-Dev/scoop-agentroute
+scoop install agentroute
+```
+
+Or build from source:
 
 ```sh
 git clone https://github.com/Radixen-Dev/AgentRoute.git
@@ -143,8 +152,9 @@ machine-readable output. Full reference, including stable exit codes, in [docs/c
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the fork → branch → PR workflow (every PR needs review from
-both [CODEOWNERS](.github/CODEOWNERS)), local dev commands, and how to add a new platform.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the fork → branch → PR workflow (every PR needs review from a
+[CODEOWNER](.github/CODEOWNERS)), local dev commands, and how to add a new platform. Agents working in
+this repo should also read [AGENTS.md](AGENTS.md) first.
 
 ## License
 
