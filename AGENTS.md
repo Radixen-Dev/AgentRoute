@@ -6,17 +6,27 @@ Read this for orientation, then go explore the code; it's the source of truth fo
 
 ## What this project is
 
-AgentRoute lets [Claude Code](https://claude.com/claude-code) make its model calls through
-[OpenRouter](https://openrouter.ai) instead of Anthropic's API directly, so a user pays for one
-OpenRouter key and can assign any OpenRouter model to Claude Code's Opus/Sonnet/Haiku tiers — without
-Claude Code itself changing at all. It's a single Go binary: a small local gateway plus either an
-animated terminal UI or a fully scriptable CLI to drive it.
+AgentRoute is a local routing layer for coding agents that lets them make their model calls through
+[OpenRouter](https://openrouter.ai) instead of going straight to whichever provider's API they're
+hard-wired to — so a user pays for one OpenRouter key and assigns any OpenRouter model to whatever
+tiers the tool exposes, without the tool itself changing at all. It's a single Go binary: a small local
+gateway plus either an animated terminal UI or a fully scriptable CLI to drive it.
+
+**This is built to support multiple coding agents, not just one.** [Claude Code](https://claude.com/claude-code)
+is v1's only *shipped* integration — it's the one that exists end-to-end and is tested — but the
+`Platform`/`Translator` boundary (see Vocabulary below) exists specifically so adding another tool is a
+matter of writing a manifest or adapter, not restructuring the core. Codex and Gemini CLI are already
+validated as manifest-driven examples (`manifests/`); they're the next candidates to actually enable, not
+a hypothetical someday. If you're extending AgentRoute to a new coding agent, that's exactly the kind of
+contribution this architecture was built for — don't treat Claude Code-specific behavior you find as the
+template to copy verbatim; treat it as the first instance of a general pattern.
 
 The "why" matters more than the "how" here: this exists because Claude Code only talks to Anthropic by
-default, and people want the model flexibility (and pricing) OpenRouter offers without giving up Claude
-Code's UX. Every design decision in this repo traces back to that — reversibility (never leave a user's
-`~/.claude/settings.json` in a broken state), and "no surprises" (everything Claude Code does is via its
-own documented config hooks, never by rewriting its files with an LLM or other non-deterministic means).
+default, and people want the model flexibility (and pricing) OpenRouter offers without giving up the
+tool's own UX. Every design decision in this repo traces back to that — reversibility (never leave a
+user's tool config in a broken state — e.g. Claude Code's `~/.claude/settings.json`), and "no surprises"
+(everything a linked tool does is via its own documented config hooks, never by rewriting its files with
+an LLM or other non-deterministic means).
 
 Read [README.md](README.md) first for the full pitch and architecture diagram, then
 [docs/concepts.md](docs/concepts.md) for the vocabulary below in depth. Both are kept current — if you
@@ -27,8 +37,9 @@ notice they aren't, that's a bug, fix it.
 These terms recur throughout the codebase and the docs. Skimming this list before exploring will save
 you from re-deriving it from scratch:
 
-- **Gateway** — the local HTTP server AgentRoute runs. Claude Code is pointed at it; it authenticates
-  requests, rewrites model aliases to whatever the active profile maps them to, and forwards upstream.
+- **Gateway** — the local HTTP server AgentRoute runs. A linked tool (Claude Code, in v1) is pointed at
+  it; it authenticates requests, rewrites model aliases to whatever the active profile maps them to, and
+  forwards upstream.
 - **Sidecar** — a managed [LiteLLM](https://github.com/BerriAI/litellm) process the gateway proxies
   Anthropic-format requests through in v1 (the one non-Go runtime dependency; see "Known trade-offs"
   below). The gateway owns its lifecycle (start/health-check/restart).
@@ -36,8 +47,8 @@ you from re-deriving it from scratch:
   inbound side. v1 only wires up Anthropic (via the sidecar); the interface is built so others slot in
   without touching the gateway core.
 - **ModelRouter / tiers** — AgentRoute exposes three stable aliases (`heavy`/`balanced`/`fast`) that a
-  user's active **profile** maps to real OpenRouter model IDs. Claude Code never sees a real model name —
-  just the alias — so changing a profile changes routing with no Claude Code restart needed.
+  user's active **profile** maps to real OpenRouter model IDs. The linked tool never sees a real model
+  name — just the alias — so changing a profile changes routing with no restart of the tool needed.
 - **Platform adapter** — the thing that points a coding tool at the gateway and un-points it cleanly
   (`Link`/`Unlink`). Claude Code is the only one shipped (in-tree); the same shape is also expressible as
   a declarative TOML manifest (see `manifests/`) for tools that don't need custom Go logic — Codex and
