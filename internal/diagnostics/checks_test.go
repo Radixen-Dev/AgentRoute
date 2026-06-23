@@ -54,7 +54,7 @@ func TestLitellmPythonFollowsSymlink(t *testing.T) {
 	}
 	symlink := filepath.Join(pathBin, "litellm")
 	if err := os.Symlink(realBin, symlink); err != nil {
-		t.Fatal(err)
+		t.Skipf("symlinks not supported on this platform/configuration: %v", err)
 	}
 
 	// litellmPython must follow the symlink and find python3 in the venv.
@@ -81,10 +81,9 @@ func TestLitellmPythonReturnsEmptyWhenNoInterpreter(t *testing.T) {
 }
 
 func TestPortFreeReturnsTrueForUnusedPort(t *testing.T) {
-	// Port 0 lets the OS pick a free port; we immediately check a high port
-	// that should be free on any CI machine.
+	// Binding port 0 always succeeds (the OS picks a free ephemeral port),
+	// so PortFree(0) should always return true.
 	if !PortFree(0) {
-		// Port 0 binding always succeeds; a false result is a bug.
 		t.Error("PortFree(0) returned false, expected true")
 	}
 }

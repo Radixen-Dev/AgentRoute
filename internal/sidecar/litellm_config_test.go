@@ -76,7 +76,7 @@ func TestWithOpenRouterPrefix(t *testing.T) {
 	}
 }
 
-func TestRenderConfigNormalizesBarModelIDs(t *testing.T) {
+func TestRenderConfigNormalizesBareModelIDs(t *testing.T) {
 	p := profile.Profile{
 		Name: "bare",
 		Models: map[string]string{

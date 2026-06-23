@@ -96,10 +96,11 @@ func checkLiteLLM() Check {
 
 	out, err := exec.Command(py, "-c", "import litellm.proxy.proxy_server").CombinedOutput()
 	if err != nil {
-		msg := strings.TrimSpace(string(out))
 		hint := "proxy extras not installed; run: pipx inject litellm 'litellm[proxy]'"
-		if msg != "" {
-			hint += "\n  " + msg
+		if msg := strings.TrimSpace(string(out)); msg != "" {
+			for _, line := range strings.Split(msg, "\n") {
+				hint += "\n  " + line
+			}
 		}
 		return Check{Name: "litellm", OK: false, Detail: hint}
 	}

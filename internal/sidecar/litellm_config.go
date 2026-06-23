@@ -72,7 +72,7 @@ func RenderConfig(p profile.Profile, apiKey, masterKey string) ([]byte, error) {
 // returns bare provider IDs (e.g. "anthropic/claude-opus-4.8"), so profiles
 // created from the model picker won't have the prefix unless we add it here.
 func withOpenRouterPrefix(model string) string {
-	if strings.HasPrefix(model, "openrouter/") {
+	if model == "" || strings.HasPrefix(model, "openrouter/") {
 		return model
 	}
 	return "openrouter/" + model
