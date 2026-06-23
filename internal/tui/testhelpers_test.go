@@ -59,11 +59,13 @@ func testServices(t *testing.T) Services {
 	t.Helper()
 	initZone()
 	withIsolatedState(t)
+	fp := &fakePlatform{}
 	return Services{
 		Styles:              theme.New(),
 		NewOpenRouterClient: openrouter.NewClient,
 		OrchestratorDeps:    orchestrator.DefaultDeps(),
-		NewPlatform:         func() platform.Platform { return &fakePlatform{} },
+		NewPlatform:         func() platform.Platform { return fp },
+		Platforms:           []platform.Platform{fp},
 	}
 }
 

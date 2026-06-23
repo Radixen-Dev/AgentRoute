@@ -28,9 +28,15 @@ type Services struct {
 	// and a claudecode adapter pointed at a temp settings.json.
 	OrchestratorDeps orchestrator.Deps
 
-	// NewPlatform builds the platform adapter the Platforms/Wiring and
-	// Doctor screens query for Detect/Status. Defaults to claudecode.New.
+	// NewPlatform builds the platform adapter the Doctor screen queries for
+	// Detect. Defaults to claudecode.New. For multi-platform display and
+	// link/unlink management, see Platforms below.
 	NewPlatform func() platform.Platform
+
+	// Platforms is the ordered list of platform adapters the Platforms/Wiring
+	// screen displays, links, and unlinks. Populated by DefaultServices with
+	// every in-tree adapter; tests may substitute a smaller list or fakes.
+	Platforms []platform.Platform
 
 	// Running is the live gateway started from the TUI (Dashboard's "u"
 	// action), if any. nil means no gateway is running. Owned by the root
@@ -55,10 +61,12 @@ type Services struct {
 
 // DefaultServices wires every seam to its real production implementation.
 func DefaultServices() Services {
+	cc := claudecode.New()
 	return Services{
 		Styles:              theme.New(),
 		NewOpenRouterClient: openrouter.NewClient,
 		OrchestratorDeps:    orchestrator.DefaultDeps(),
 		NewPlatform:         func() platform.Platform { return claudecode.New() },
+		Platforms:           []platform.Platform{cc},
 	}
 }
