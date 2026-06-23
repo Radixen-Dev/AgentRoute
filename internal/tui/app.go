@@ -17,7 +17,13 @@ import (
 
 // Model is the TUI's root Bubble Tea model.
 type Model struct {
-	services Services
+	// services is a pointer so that all screens — and initScreen when it
+	// creates new screens — share one Services object. Without the pointer,
+	// Model.Update's value receiver creates a copy of m on each call, and
+	// &m.services in initScreen would point to a different allocation than
+	// the one earlier screens hold, silently dropping mutations like
+	// EditingProfile that screens write between navigation frames.
+	services *Services
 	keymap   KeyMap
 
 	width, height int
@@ -39,9 +45,13 @@ type Model struct {
 // NO_COLOR, or when the caller otherwise wants to land directly on the
 // Dashboard (e.g. snapshot tests).
 func New(services Services, skipSplash bool) Model {
+	// Allocate services on the heap so every screen and every initScreen call
+	// gets the same pointer. Callers still pass Services by value (no API change).
+	sp := new(Services)
+	*sp = services
 	reduceMotion := anim.Reduced()
 	m := Model{
-		services:     services,
+		services:     sp,
 		keymap:       DefaultKeyMap(),
 		active:       ScreenDashboard,
 		reduceMotion: reduceMotion,
@@ -67,7 +77,7 @@ func (m Model) Init() tea.Cmd {
 }
 
 func (m *Model) initScreen(id ScreenID) tea.Cmd {
-	m.screen = newScreen(id, &m.services)
+	m.screen = newScreen(id, m.services)
 	m.active = id
 	return m.screen.Init()
 }
