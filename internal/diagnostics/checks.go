@@ -90,16 +90,18 @@ func checkLiteLLM() Check {
 	}
 
 	py := litellmPython(resolved)
-	if py != "" {
-		out, err := exec.Command(py, "-c", "import litellm.proxy.proxy_server").CombinedOutput()
-		if err != nil {
-			msg := strings.TrimSpace(string(out))
-			hint := "proxy extras not installed; run: pipx inject litellm 'litellm[proxy]'"
-			if msg != "" {
-				hint += "\n  " + msg
-			}
-			return Check{Name: "litellm", OK: false, Detail: hint}
+	if py == "" {
+		return Check{Name: "litellm", OK: true, Detail: "found on PATH (proxy extras unverified: Python interpreter not found)"}
+	}
+
+	out, err := exec.Command(py, "-c", "import litellm.proxy.proxy_server").CombinedOutput()
+	if err != nil {
+		msg := strings.TrimSpace(string(out))
+		hint := "proxy extras not installed; run: pipx inject litellm 'litellm[proxy]'"
+		if msg != "" {
+			hint += "\n  " + msg
 		}
+		return Check{Name: "litellm", OK: false, Detail: hint}
 	}
 
 	return Check{Name: "litellm", OK: true, Detail: "found on PATH (proxy extras ok)"}
@@ -114,7 +116,7 @@ func litellmPython(litellmPath string) string {
 		litellmPath = resolved
 	}
 	dir := filepath.Dir(litellmPath)
-	for _, name := range []string{"python3", "python"} {
+	for _, name := range []string{"python3", "python", "python.exe"} {
 		p := filepath.Join(dir, name)
 		if _, err := os.Stat(p); err == nil {
 			return p
