@@ -72,6 +72,19 @@ func (m *Model) initScreen(id ScreenID) tea.Cmd {
 	return m.screen.Init()
 }
 
+// forwardSize replays the current terminal dimensions into m.screen so that
+// screens navigated to after the initial WindowSizeMsg start at the correct
+// size rather than 0×0. Must be called after initScreen, never before.
+func (m *Model) forwardSize() {
+	if m.screen == nil || m.width == 0 {
+		return
+	}
+	m.screen, _ = m.screen.Update(tea.WindowSizeMsg{
+		Width:  m.width,
+		Height: bodyHeight(m.height),
+	})
+}
+
 // Update implements tea.Model.
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch typed := msg.(type) {
@@ -108,13 +121,17 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if typed.pushBack && !m.booting {
 			m.backStack = append(m.backStack, m.active)
 		}
-		return m, m.initScreen(typed.to)
+		initCmd := m.initScreen(typed.to)
+		m.forwardSize()
+		return m, initCmd
 
 	case backMsg:
 		if n := len(m.backStack); n > 0 {
 			prev := m.backStack[n-1]
 			m.backStack = m.backStack[:n-1]
-			return m, m.initScreen(prev)
+			initCmd := m.initScreen(prev)
+			m.forwardSize()
+			return m, initCmd
 		}
 		return m, nil
 
