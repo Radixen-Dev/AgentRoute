@@ -17,7 +17,13 @@ import (
 
 // Model is the TUI's root Bubble Tea model.
 type Model struct {
-	services Services
+	// services is a pointer so that all screens — and initScreen when it
+	// creates new screens — share one Services object. Without the pointer,
+	// Model.Update's value receiver creates a copy of m on each call, and
+	// &m.services in initScreen would point to a different allocation than
+	// the one earlier screens hold, silently dropping mutations like
+	// EditingProfile that screens write between navigation frames.
+	services *Services
 	keymap   KeyMap
 
 	width, height int
@@ -39,9 +45,13 @@ type Model struct {
 // NO_COLOR, or when the caller otherwise wants to land directly on the
 // Dashboard (e.g. snapshot tests).
 func New(services Services, skipSplash bool) Model {
+	// Allocate services on the heap so every screen and every initScreen call
+	// gets the same pointer. Callers still pass Services by value (no API change).
+	sp := new(Services)
+	*sp = services
 	reduceMotion := anim.Reduced()
 	m := Model{
-		services:     services,
+		services:     sp,
 		keymap:       DefaultKeyMap(),
 		active:       ScreenDashboard,
 		reduceMotion: reduceMotion,
@@ -67,9 +77,22 @@ func (m Model) Init() tea.Cmd {
 }
 
 func (m *Model) initScreen(id ScreenID) tea.Cmd {
-	m.screen = newScreen(id, &m.services)
+	m.screen = newScreen(id, m.services)
 	m.active = id
 	return m.screen.Init()
+}
+
+// forwardSize replays the current terminal dimensions into m.screen so that
+// screens navigated to after the initial WindowSizeMsg start at the correct
+// size rather than 0×0. Must be called after initScreen, never before.
+func (m *Model) forwardSize() {
+	if m.screen == nil || m.width == 0 {
+		return
+	}
+	m.screen, _ = m.screen.Update(tea.WindowSizeMsg{
+		Width:  m.width,
+		Height: bodyHeight(m.height),
+	})
 }
 
 // Update implements tea.Model.
@@ -108,13 +131,17 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if typed.pushBack && !m.booting {
 			m.backStack = append(m.backStack, m.active)
 		}
-		return m, m.initScreen(typed.to)
+		initCmd := m.initScreen(typed.to)
+		m.forwardSize()
+		return m, initCmd
 
 	case backMsg:
 		if n := len(m.backStack); n > 0 {
 			prev := m.backStack[n-1]
 			m.backStack = m.backStack[:n-1]
-			return m, m.initScreen(prev)
+			initCmd := m.initScreen(prev)
+			m.forwardSize()
+			return m, initCmd
 		}
 		return m, nil
 
@@ -152,6 +179,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *Model) handleGlobalKey(msg tea.KeyMsg) (tea.Cmd, bool) {
+	// If the active screen has a focused text input, let it handle the key
+	// directly — except Ctrl+C, which always quits.
+	if ic, ok := m.screen.(InputCapturer); ok && ic.CapturingInput() {
+		if msg.Type == tea.KeyCtrlC {
+			return tea.Quit, true
+		}
+		return nil, false
+	}
 	switch {
 	case key.Matches(msg, m.keymap.Quit):
 		return tea.Quit, true
@@ -206,11 +241,11 @@ func globalHints(_ KeyMap, screenBindings []key.Binding) []keyHint {
 		{key: "esc", label: "back"},
 	}
 	for _, b := range screenBindings {
-		keys := b.Keys()
-		if len(keys) == 0 {
+		h := b.Help()
+		if h.Key == "" {
 			continue
 		}
-		hints = append(hints, keyHint{key: keys[0], label: b.Help().Desc})
+		hints = append(hints, keyHint{key: h.Key, label: h.Desc})
 	}
 	return hints
 }

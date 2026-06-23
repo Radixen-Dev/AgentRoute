@@ -84,6 +84,22 @@ The entrypoint is `cmd/agentroute/main.go`. When in doubt, `go doc` and grep bea
 - **Only Claude Code is enabled in v1.** Codex/Gemini manifests exist purely to validate the manifest
   schema generalizes — they are not wired into the runtime registry on purpose.
 
+## Engineering standards
+
+**Fix the root cause, not the symptom.** When you encounter a bug, identify *why* it happens before
+deciding *what* to change. A patch that suppresses the symptom without addressing the cause will need
+to be repeated for every new place the same underlying problem surfaces.
+
+Concrete example: the TUI had a bug where typing a number in any text field triggered a global screen-jump
+keybinding. The symptom fix would have been to add an `if s.creating { return }` guard inside every
+existing screen that has an input. The root fix was a single `InputCapturer` interface in `screen.go` —
+one method, checked once in `handleGlobalKey`. Every future input field gets correct behaviour
+automatically by implementing that interface; the global handler never needs to change again.
+
+Ask: *if this same class of problem appeared in five other places, would my fix cover them all, or would
+each one need its own patch?* If the answer is "each one needs its own patch," you have not found the
+root yet.
+
 ## Verifying your work
 
 ```sh

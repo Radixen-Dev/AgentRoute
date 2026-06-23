@@ -21,17 +21,26 @@ import (
 
 const dashGatewayZone = "dash-gateway-toggle"
 
+// dashPlatEntry is a lightweight status snapshot for one platform, held by
+// the dashboard for its summary card. Full per-platform details live in the
+// Platforms/Wiring screen.
+type dashPlatEntry struct {
+	id     string
+	status platform.LinkStatus
+	err    error
+}
+
 type dashboardScreen struct {
 	services *Services
 	width    int
 	height   int
 
-	cfg         config.Config
-	cfgErr      error
-	hasProfile  bool
-	profileName string
-	platStatus  platform.LinkStatus
-	platErr     error
+	cfg          config.Config
+	cfgErr       error
+	hasProfile   bool
+	profileReady bool // true when the active profile has at least one tier model
+	profileName  string
+	platEntries  []dashPlatEntry
 
 	spark        sparkline.Model
 	lastReqCount int
@@ -45,22 +54,30 @@ func newDashboardScreen(services *Services) Screen {
 func (s *dashboardScreen) Title() string { return titleFor(ScreenDashboard) }
 
 func (s *dashboardScreen) Bindings() []key.Binding {
-	bindings := []key.Binding{
-		key.NewBinding(key.WithKeys("u"), key.WithHelp("u", "start gateway")),
+	if s.services.Running == nil {
+		return []key.Binding{
+			key.NewBinding(key.WithKeys("u"), key.WithHelp("u", "start gateway")),
+		}
+	}
+	return []key.Binding{
 		key.NewBinding(key.WithKeys("d"), key.WithHelp("d", "stop gateway")),
 	}
-	return bindings
 }
 
 func (s *dashboardScreen) Init() tea.Cmd {
 	s.cfg, s.cfgErr = config.Load()
 	if s.cfg.ActiveProfile != "" {
-		if _, err := profile.Load(s.cfg.ActiveProfile); err == nil {
+		if prof, err := profile.Load(s.cfg.ActiveProfile); err == nil {
 			s.hasProfile = true
+			s.profileReady = len(prof.Models) > 0
 			s.profileName = s.cfg.ActiveProfile
 		}
 	}
-	s.platStatus, s.platErr = s.services.NewPlatform().Status(context.Background())
+	s.platEntries = make([]dashPlatEntry, len(s.services.Platforms))
+	for i, p := range s.services.Platforms {
+		status, err := p.Status(context.Background())
+		s.platEntries[i] = dashPlatEntry{id: p.ID(), status: status, err: err}
+	}
 	return dashTickCmd()
 }
 
@@ -97,7 +114,10 @@ func (s *dashboardScreen) toggleGateway() tea.Cmd {
 	}
 	if s.services.Running == nil {
 		if !s.hasProfile {
-			return toast(toastErr, "no active profile; open Profiles first")
+			return toast(toastErr, "no active profile — open Profiles (2) to create one")
+		}
+		if !s.profileReady {
+			return toast(toastWarn, "profile has no models — open Role Mapper (3) to configure it")
 		}
 		s.pending = "starting"
 		return startGatewayCmd(s.services)
@@ -147,8 +167,14 @@ func (s *dashboardScreen) Update(msg tea.Msg) (Screen, tea.Cmd) {
 
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "u", "d":
-			return s, s.toggleGateway()
+		case "u":
+			if s.services.Running == nil {
+				return s, s.toggleGateway()
+			}
+		case "d":
+			if s.services.Running != nil {
+				return s, s.toggleGateway()
+			}
 		}
 
 	case tea.MouseMsg:
@@ -187,17 +213,27 @@ func (s *dashboardScreen) View() string {
 	profileLine := "none active — open Profiles (2) to create one"
 	if s.hasProfile {
 		profileLine = s.profileName
+		if !s.profileReady {
+			profileLine += " " + styles.Warn.Render("(no models — press 3 to configure)")
+		}
 	}
-	platLine := "not linked"
-	if s.platErr != nil {
-		platLine = "error: " + s.platErr.Error()
-	} else if s.platStatus.Linked {
-		platLine = fmt.Sprintf("claude-code linked -> %s", s.platStatus.GatewayURL)
+	platLines := ""
+	for _, pe := range s.platEntries {
+		var statusStr string
+		switch {
+		case pe.err != nil:
+			statusStr = styles.Err.Render("error: " + pe.err.Error())
+		case pe.status.Linked:
+			statusStr = styles.OK.Render(fmt.Sprintf("linked → %s", pe.status.GatewayURL))
+		default:
+			statusStr = styles.Muted.Render("not linked")
+		}
+		platLines += "\n" + lipgloss.NewStyle().Width(14).Render(pe.id+":") + statusStr
 	}
 	infoCard := styles.Card.Width(width - 2).Render(
 		styles.CardTitle.Render("Profile & Platforms") + "\n" +
-			"active profile: " + profileLine + "\n" +
-			"claude-code: " + platLine,
+			"active profile: " + profileLine +
+			platLines,
 	)
 
 	s.spark.Draw()

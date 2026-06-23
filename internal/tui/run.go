@@ -27,7 +27,7 @@ func Run(services Services) error {
 	p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseCellMotion())
 	final, err := p.Run()
 
-	if fm, ok := final.(Model); ok && fm.services.Running != nil {
+	if fm, ok := final.(Model); ok && fm.services != nil && fm.services.Running != nil {
 		fm.services.Running.Stop(context.Background())
 	}
 	return err

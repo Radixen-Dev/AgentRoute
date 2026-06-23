@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	tea "github.com/charmbracelet/bubbletea"
+
+	"github.com/Radixen-Dev/AgentRoute/internal/openrouter"
 )
 
 func TestRenderSplashShowsWordmarkAndVersion(t *testing.T) {
@@ -99,6 +101,68 @@ func TestRootModelNumberKeyNavigatesAndEscGoesBack(t *testing.T) {
 	model = drive(t, model, tea.KeyMsg{Type: tea.KeyEsc})
 	if !strings.Contains(model.View(), "Dashboard") {
 		t.Fatalf("expected Esc to return to Dashboard, got:\n%s", model.View())
+	}
+}
+
+func TestInputCapturerBlocksGlobalKeysWhileCreatingProfile(t *testing.T) {
+	services := testServices(t)
+	m := New(services, true)
+	var model tea.Model = m
+	model = drive(t, model, tea.WindowSizeMsg{Width: 100, Height: 30})
+
+	// Navigate directly to Profiles via the internal message (bypasses the
+	// number-key → Cmd → navigateMsg chain; driveExec resolves initScreen).
+	model = driveExec(t, model, navigateMsg{to: ScreenProfiles})
+	model = drive(t, model, tea.WindowSizeMsg{Width: 100, Height: 30})
+	if !strings.Contains(model.View(), "Profiles") {
+		t.Fatalf("expected Profiles screen, got:\n%s", model.View())
+	}
+
+	// Start creating a profile — focuses the text input (CapturingInput → true).
+	model = drive(t, model, tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("n")})
+
+	// "3" is the global jump key for Role Mapper. With InputCapturer working,
+	// it must be routed to the text field; without it, driveExec would execute
+	// the navigate Cmd and land us on Role Mapper.
+	model = driveExec(t, model, tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("3")})
+	if strings.Contains(model.View(), "Role Mapper") {
+		t.Fatalf("digit key while profile-name input was focused jumped to Role Mapper:\n%s", model.View())
+	}
+	if !strings.Contains(model.View(), "Profiles") {
+		t.Fatalf("expected to stay on Profiles, got:\n%s", model.View())
+	}
+}
+
+func TestInputCapturerBlocksGlobalKeysWhileFilteringModels(t *testing.T) {
+	services := testServices(t)
+	// Pre-populate the model cache so the picker skips the async fetch and
+	// renders the list (required for the filter input to be reachable).
+	services.CachedModels = []openrouter.Model{
+		{ID: "test/model", Name: "Test Model", ContextLength: 4096},
+	}
+	m := New(services, true)
+	var model tea.Model = m
+	model = drive(t, model, tea.WindowSizeMsg{Width: 100, Height: 30})
+
+	// Navigate directly to Model Picker.
+	model = driveExec(t, model, navigateMsg{to: ScreenModelPicker})
+	model = drive(t, model, tea.WindowSizeMsg{Width: 100, Height: 30})
+	if !strings.Contains(model.View(), "Model Picker") {
+		t.Fatalf("expected Model Picker screen, got:\n%s", model.View())
+	}
+
+	// Open the list filter ("/" enters bubbles/list filter mode).
+	model = driveExec(t, model, tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("/")})
+
+	// "3" is the global jump key for Role Mapper. With InputCapturer working,
+	// it must reach the filter input; without it, driveExec would execute the
+	// navigate Cmd and land us on Role Mapper.
+	model = driveExec(t, model, tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("3")})
+	if strings.Contains(model.View(), "Role Mapper") {
+		t.Fatalf("digit key while model filter was open jumped to Role Mapper:\n%s", model.View())
+	}
+	if !strings.Contains(model.View(), "Model Picker") {
+		t.Fatalf("expected to stay on Model Picker, got:\n%s", model.View())
 	}
 }
 
