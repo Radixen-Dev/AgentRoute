@@ -16,4 +16,4 @@
 <!-- How did you verify this change? Commands run, screenshots/gifs for TUI changes, etc. -->
 
 ---
-This repository requires review and approval from **both** CODEOWNERS (@Gesso64 and @Dborasik) before merge.
+This repository requires review and approval from a [CODEOWNER](../.github/CODEOWNERS) before merge — see [CONTRIBUTING.md](../CONTRIBUTING.md) for the current count and reviewer list.
