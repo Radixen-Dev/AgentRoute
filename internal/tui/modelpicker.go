@@ -37,9 +37,9 @@ type richModelDelegate struct {
 	styles theme.Styles
 }
 
-func (d richModelDelegate) Height() int                               { return 2 }
-func (d richModelDelegate) Spacing() int                              { return 1 }
-func (d richModelDelegate) Update(_ tea.Msg, _ *list.Model) tea.Cmd  { return nil }
+func (d richModelDelegate) Height() int                             { return 2 }
+func (d richModelDelegate) Spacing() int                            { return 1 }
+func (d richModelDelegate) Update(_ tea.Msg, _ *list.Model) tea.Cmd { return nil }
 
 func (d richModelDelegate) Render(w io.Writer, m list.Model, index int, item list.Item) {
 	mi, ok := item.(modelItem)
@@ -64,12 +64,12 @@ func (d richModelDelegate) Render(w io.Writer, m list.Model, index int, item lis
 		badge := s.OK.Render("[" + provider + "]")
 		line1 := badge + "  " + lipgloss.NewStyle().Bold(true).Foreground(theme.Text).Render(name)
 		line2 := "  " + s.Muted.Render(meta)
-		fmt.Fprintf(w, "%s\n%s", line1, line2)
+		_, _ = fmt.Fprintf(w, "%s\n%s", line1, line2)
 	} else {
 		badge := s.Muted.Render("[" + provider + "]")
 		line1 := badge + "  " + name
 		line2 := "  " + s.Muted.Render(meta)
-		fmt.Fprintf(w, "%s\n%s", line1, line2)
+		_, _ = fmt.Fprintf(w, "%s\n%s", line1, line2)
 	}
 }
 

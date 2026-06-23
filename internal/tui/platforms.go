@@ -228,26 +228,28 @@ func (s *platformsScreen) View() string {
 
 		// Install column
 		var installStr string
-		if e.err != nil {
+		switch {
+		case e.err != nil:
 			installStr = styles.Err.Render("error")
-		} else if e.detect.Installed {
+		case e.detect.Installed:
 			v := "installed"
 			if e.detect.Version != "" {
 				v += " (" + e.detect.Version + ")"
 			}
 			installStr = styles.OK.Render(v)
-		} else {
+		default:
 			installStr = styles.Muted.Render("not detected")
 		}
 		installStr = lipgloss.NewStyle().Width(platInstallWidth).Render(installStr)
 
 		// Link-status column
 		var linkStr string
-		if e.err != nil {
+		switch {
+		case e.err != nil:
 			linkStr = styles.Muted.Render("–")
-		} else if e.status.Linked {
+		case e.status.Linked:
 			linkStr = styles.OK.Render("linked → " + e.status.GatewayURL)
-		} else {
+		default:
 			linkStr = styles.Muted.Render("not linked")
 		}
 
@@ -258,7 +260,7 @@ func (s *platformsScreen) View() string {
 	if sel := s.selected(); sel != nil {
 		b.WriteString("\n")
 		if sel.err != nil {
-			b.WriteString(styles.Err.Render("error: " + sel.err.Error()) + "\n")
+			b.WriteString(styles.Err.Render("error: "+sel.err.Error()) + "\n")
 		} else {
 			if sel.status.ConfigPath != "" {
 				b.WriteString(styles.Muted.Render("config:  ") + sel.status.ConfigPath + "\n")

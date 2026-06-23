@@ -220,11 +220,12 @@ func (s *dashboardScreen) View() string {
 	platLines := ""
 	for _, pe := range s.platEntries {
 		var statusStr string
-		if pe.err != nil {
+		switch {
+		case pe.err != nil:
 			statusStr = styles.Err.Render("error: " + pe.err.Error())
-		} else if pe.status.Linked {
+		case pe.status.Linked:
 			statusStr = styles.OK.Render(fmt.Sprintf("linked → %s", pe.status.GatewayURL))
-		} else {
+		default:
 			statusStr = styles.Muted.Render("not linked")
 		}
 		platLines += "\n" + lipgloss.NewStyle().Width(14).Render(pe.id+":") + statusStr
