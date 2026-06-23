@@ -40,8 +40,11 @@ func renderHelpOverlay(s theme.Styles, width, height int, _ KeyMap, active Scree
 		b.WriteString(s.CardTitle.Render(active.Title() + " keys"))
 		b.WriteString("\n\n")
 		for _, bd := range bindings {
-			keys := strings.Join(bd.Keys(), "/")
-			_, _ = fmt.Fprintf(&b, "  %s  %s\n", s.HelpKey.Render(pad(keys, 16)), s.Help.Render(bd.Help().Desc))
+			h := bd.Help()
+			if h.Key == "" {
+				continue
+			}
+			_, _ = fmt.Fprintf(&b, "  %s  %s\n", s.HelpKey.Render(pad(h.Key, 16)), s.Help.Render(h.Desc))
 		}
 	}
 
