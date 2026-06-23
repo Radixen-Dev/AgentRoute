@@ -88,7 +88,7 @@ func loadAllPlatformStatusCmd(services *Services) tea.Cmd {
 // platformActionDoneMsg signals completion of a link or unlink action.
 type platformActionDoneMsg struct {
 	displayName string
-	verb        string // "linked" | "unlinked"
+	action      string // "link" | "unlink"  (action form, not past tense)
 	err         error
 }
 
@@ -118,7 +118,7 @@ func (s *platformsScreen) doLink() tea.Cmd {
 	}
 	return func() tea.Msg {
 		_, err := adapter.Link(context.Background(), in)
-		return platformActionDoneMsg{displayName: adapter.DisplayName(), verb: "linked", err: err}
+		return platformActionDoneMsg{displayName: adapter.DisplayName(), action: "link", err: err}
 	}
 }
 
@@ -130,7 +130,7 @@ func (s *platformsScreen) doUnlink() tea.Cmd {
 	adapter := e.adapter
 	return func() tea.Msg {
 		err := adapter.Unlink(context.Background())
-		return platformActionDoneMsg{displayName: adapter.DisplayName(), verb: "unlinked", err: err}
+		return platformActionDoneMsg{displayName: adapter.DisplayName(), action: "unlink", err: err}
 	}
 }
 
@@ -152,12 +152,12 @@ func (s *platformsScreen) Update(msg tea.Msg) (Screen, tea.Cmd) {
 		if msg.err != nil {
 			return s, tea.Batch(
 				loadAllPlatformStatusCmd(s.services),
-				toast(toastErr, msg.verb+" failed: "+msg.err.Error()),
+				toast(toastErr, msg.action+" failed: "+msg.err.Error()),
 			)
 		}
 		return s, tea.Batch(
 			loadAllPlatformStatusCmd(s.services),
-			toast(toastOK, msg.displayName+" "+msg.verb),
+			toast(toastOK, msg.displayName+" "+msg.action+"ed"),
 		)
 
 	case tea.KeyMsg:

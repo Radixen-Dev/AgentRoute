@@ -77,3 +77,20 @@ func drive(t *testing.T, m tea.Model, msg tea.Msg) tea.Model {
 	next, _ := m.Update(msg)
 	return next
 }
+
+// driveExec sends msg through Update and, if a Cmd is returned, executes it
+// once and sends the resulting message through Update as well. This covers
+// the TUI's two-step navigation flow (key → navigate Cmd → navigateMsg →
+// initScreen) so that tests can assert on the final screen rather than on
+// whether a Cmd was produced. Only the first Cmd is chained — this is
+// intentional; async Cmds (network fetches, etc.) are discarded on the
+// second Update call.
+func driveExec(t *testing.T, m tea.Model, msg tea.Msg) tea.Model {
+	t.Helper()
+	next, cmd := m.Update(msg)
+	if cmd == nil {
+		return next
+	}
+	result, _ := next.Update(cmd())
+	return result
+}
