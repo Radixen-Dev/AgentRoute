@@ -66,7 +66,7 @@ func DefaultServices() Services {
 		Styles:              theme.New(),
 		NewOpenRouterClient: openrouter.NewClient,
 		OrchestratorDeps:    orchestrator.DefaultDeps(),
-		NewPlatform:         func() platform.Platform { return claudecode.New() },
+		NewPlatform:         func() platform.Platform { return cc },
 		Platforms:           []platform.Platform{cc},
 	}
 }

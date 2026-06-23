@@ -40,22 +40,25 @@ func newPlatformsScreen(services *Services) Screen {
 func (s *platformsScreen) Title() string { return titleFor(ScreenPlatforms) }
 
 // Bindings returns context-sensitive hints for the selected platform: link
-// if it is not linked, unlink if it is. Navigation and refresh are global.
+// if it is not linked, unlink if it is. r to refresh is screen-local (not global).
 func (s *platformsScreen) Bindings() []key.Binding {
+	refresh := key.NewBinding(key.WithKeys("r"), key.WithHelp("r", "refresh"))
 	if s.loading || len(s.entries) == 0 {
-		return nil
+		return []key.Binding{refresh}
 	}
 	e := s.entries[s.cursor]
 	if e.err != nil {
-		return nil
+		return []key.Binding{refresh}
 	}
 	if e.status.Linked {
 		return []key.Binding{
 			key.NewBinding(key.WithKeys("enter", "u"), key.WithHelp("enter/u", "unlink")),
+			refresh,
 		}
 	}
 	return []key.Binding{
 		key.NewBinding(key.WithKeys("enter", "l"), key.WithHelp("enter/l", "link")),
+		refresh,
 	}
 }
 

@@ -287,7 +287,10 @@ func formatPricePerM(s string) string {
 		return "–"
 	}
 	f, err := strconv.ParseFloat(s, 64)
-	if err != nil || f == 0 {
+	if err != nil {
+		return "–"
+	}
+	if f == 0 {
 		return "free"
 	}
 	perM := f * 1_000_000
