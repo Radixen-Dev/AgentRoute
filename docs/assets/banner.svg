@@ -1,16 +1,29 @@
-<svg viewBox="0 0 900 180" xmlns="http://www.w3.org/2000/svg" width="900" height="180" role="img" aria-label="AgentRoute banner">
+<svg viewBox="0 0 900 180" xmlns="http://www.w3.org/2000/svg" width="100%" role="img" aria-label="AgentRoute banner">
   <title>AgentRoute — Route Claude Code through OpenRouter</title>
+
+  <defs>
+    <!-- Exit trace from diamond: solid → transparent (signal enters wordmark) -->
+    <linearGradient id="trace-fade-out" x1="135" y1="0" x2="174" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#41D6C3" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#41D6C3" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Right exit trace: transparent → solid (signal re-emerges, exits to OpenRouter) -->
+    <linearGradient id="trace-fade-in" x1="556" y1="0" x2="900" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#41D6C3" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#41D6C3" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
 
   <!-- Ink background -->
   <rect width="900" height="180" rx="16" fill="#0F1419"/>
 
   <!-- Agent signal traces entering the gateway -->
-  <line x1="0"   y1="68"  x2="45" y2="90" stroke="#41D6C3" stroke-width="2"   stroke-linecap="round"/>
-  <line x1="0"   y1="90"  x2="45" y2="90" stroke="#41D6C3" stroke-width="2"   stroke-linecap="round"/>
-  <line x1="0"   y1="112" x2="45" y2="90" stroke="#41D6C3" stroke-width="2"   stroke-linecap="round"/>
+  <line x1="0"   y1="68"  x2="45" y2="90" stroke="#41D6C3" stroke-width="2" stroke-linecap="round"/>
+  <line x1="0"   y1="90"  x2="45" y2="90" stroke="#41D6C3" stroke-width="2" stroke-linecap="round"/>
+  <line x1="0"   y1="112" x2="45" y2="90" stroke="#41D6C3" stroke-width="2" stroke-linecap="round"/>
 
-  <!-- Routed signal exiting the gateway -->
-  <line x1="135" y1="90"  x2="174" y2="90" stroke="#41D6C3" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- Exit trace from diamond: fades out through the wordmark -->
+  <line x1="135" y1="90" x2="174" y2="90" stroke="url(#trace-fade-out)" stroke-width="3.5" stroke-linecap="round"/>
 
   <!-- Diamond: the routing gateway node -->
   <polygon points="90,45 135,90 90,135 45,90"
@@ -21,8 +34,7 @@
 
   <!-- Robot agent icon (1.875× the standalone mark, centered at 90,90) -->
   <!-- Antenna -->
-  <line x1="90" y1="77" x2="90" y2="68"
-        stroke="#41D6C3" stroke-width="2" stroke-linecap="round"/>
+  <line x1="90" y1="77" x2="90" y2="68" stroke="#41D6C3" stroke-width="2" stroke-linecap="round"/>
   <circle cx="90" cy="66" r="3" fill="#41D6C3"/>
   <!-- Head -->
   <rect x="73" y="77" width="34" height="28" rx="4"
@@ -31,8 +43,7 @@
   <circle cx="83" cy="87" r="4" fill="#41D6C3"/>
   <circle cx="97" cy="87" r="4" fill="#41D6C3"/>
   <!-- Mouth -->
-  <line x1="81" y1="98" x2="99" y2="98"
-        stroke="#41D6C3" stroke-width="2" stroke-linecap="round"/>
+  <line x1="81" y1="98" x2="99" y2="98" stroke="#41D6C3" stroke-width="2" stroke-linecap="round"/>
 
   <!-- Junction nodes -->
   <circle cx="45"  cy="90" r="5" fill="#41D6C3"/>
@@ -51,4 +62,8 @@
         font-family="'Courier New', Courier, monospace"
         font-size="15"
         fill="#7D8A99">Route Claude Code through OpenRouter</text>
+
+  <!-- Routed signal fades in and exits right toward OpenRouter -->
+  <line x1="556" y1="90" x2="900" y2="90"
+        stroke="url(#trace-fade-in)" stroke-width="2.5" stroke-linecap="round"/>
 </svg>
