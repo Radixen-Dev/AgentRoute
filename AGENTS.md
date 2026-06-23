@@ -10,7 +10,7 @@ AgentRoute is a local routing layer for coding agents that lets them make their 
 [OpenRouter](https://openrouter.ai) instead of going straight to whichever provider's API they're
 hard-wired to — so a user pays for one OpenRouter key and assigns any OpenRouter model to whatever
 tiers the tool exposes, without the tool itself changing at all. It's a single Go binary: a small local
-gateway plus either an animated terminal UI or a fully scriptable CLI to drive it.
+gateway plus either a TUI or a fully scriptable CLI to drive it.
 
 **This is built to support multiple coding agents, not just one.** [Claude Code](https://claude.com/claude-code)
 is v1's only *shipped* integration — it's the one that exists end-to-end and is tested — but the
