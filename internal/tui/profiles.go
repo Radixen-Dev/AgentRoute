@@ -100,6 +100,8 @@ func (s *profilesScreen) Update(msg tea.Msg) (Screen, tea.Cmd) {
 				if err := profile.Save(profile.Profile{Name: name}); err != nil {
 					return s, toast(toastErr, "create failed: "+err.Error())
 				}
+				s.cfg.ActiveProfile = name
+				_ = config.Save(s.cfg)
 				s.services.EditingProfile = profile.Profile{Name: name}
 				return s, tea.Batch(s.reload(), navigate(ScreenRoleMapper))
 			case "esc":

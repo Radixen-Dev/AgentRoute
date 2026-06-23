@@ -35,11 +35,12 @@ type dashboardScreen struct {
 	width    int
 	height   int
 
-	cfg         config.Config
-	cfgErr      error
-	hasProfile  bool
-	profileName string
-	platEntries []dashPlatEntry
+	cfg          config.Config
+	cfgErr       error
+	hasProfile   bool
+	profileReady bool // true when the active profile has at least one tier model
+	profileName  string
+	platEntries  []dashPlatEntry
 
 	spark        sparkline.Model
 	lastReqCount int
@@ -66,8 +67,9 @@ func (s *dashboardScreen) Bindings() []key.Binding {
 func (s *dashboardScreen) Init() tea.Cmd {
 	s.cfg, s.cfgErr = config.Load()
 	if s.cfg.ActiveProfile != "" {
-		if _, err := profile.Load(s.cfg.ActiveProfile); err == nil {
+		if prof, err := profile.Load(s.cfg.ActiveProfile); err == nil {
 			s.hasProfile = true
+			s.profileReady = len(prof.Models) > 0
 			s.profileName = s.cfg.ActiveProfile
 		}
 	}
@@ -112,7 +114,10 @@ func (s *dashboardScreen) toggleGateway() tea.Cmd {
 	}
 	if s.services.Running == nil {
 		if !s.hasProfile {
-			return toast(toastErr, "no active profile; open Profiles first")
+			return toast(toastErr, "no active profile — open Profiles (2) to create one")
+		}
+		if !s.profileReady {
+			return toast(toastWarn, "profile has no models — open Role Mapper (3) to configure it")
 		}
 		s.pending = "starting"
 		return startGatewayCmd(s.services)
@@ -208,6 +213,9 @@ func (s *dashboardScreen) View() string {
 	profileLine := "none active — open Profiles (2) to create one"
 	if s.hasProfile {
 		profileLine = s.profileName
+		if !s.profileReady {
+			profileLine += " " + styles.Warn.Render("(no models — press 3 to configure)")
+		}
 	}
 	platLines := ""
 	for _, pe := range s.platEntries {
