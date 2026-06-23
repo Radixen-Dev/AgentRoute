@@ -101,6 +101,12 @@ func newModelPickerScreen(services *Services) Screen {
 
 func (s *modelPickerScreen) Title() string { return titleFor(ScreenModelPicker) }
 
+// CapturingInput implements InputCapturer: while the list's filter input is
+// active, all keys must reach the list component, not the global keymap.
+func (s *modelPickerScreen) CapturingInput() bool {
+	return s.list.FilterState() == list.Filtering
+}
+
 func (s *modelPickerScreen) Bindings() []key.Binding {
 	return []key.Binding{
 		key.NewBinding(key.WithKeys("enter"), key.WithHelp("enter", "choose model")),

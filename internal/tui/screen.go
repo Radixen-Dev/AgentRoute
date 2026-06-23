@@ -48,6 +48,19 @@ type Screen interface {
 	Bindings() []key.Binding
 }
 
+// InputCapturer is an optional interface a Screen implements when it has a
+// focused text input (a profile-name field, a list filter, etc.). While
+// CapturingInput returns true the root model passes key messages directly to
+// the screen without first checking global bindings (number-key screen jumps,
+// q to quit, esc to go back). Ctrl+C still quits regardless.
+//
+// Any screen that adds a text input in the future should implement this; the
+// root model checks via a type assertion so screens without inputs need not
+// change at all.
+type InputCapturer interface {
+	CapturingInput() bool
+}
+
 // navigateMsg asks the root model to switch the active screen, optionally
 // pushing the current one onto the back-stack first.
 type navigateMsg struct {

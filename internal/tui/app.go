@@ -169,6 +169,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *Model) handleGlobalKey(msg tea.KeyMsg) (tea.Cmd, bool) {
+	// If the active screen has a focused text input, let it handle the key
+	// directly — except Ctrl+C, which always quits.
+	if ic, ok := m.screen.(InputCapturer); ok && ic.CapturingInput() {
+		if msg.Type == tea.KeyCtrlC {
+			return tea.Quit, true
+		}
+		return nil, false
+	}
 	switch {
 	case key.Matches(msg, m.keymap.Quit):
 		return tea.Quit, true

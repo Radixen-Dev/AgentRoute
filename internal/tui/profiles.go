@@ -53,6 +53,10 @@ func newProfilesScreen(services *Services) Screen {
 
 func (s *profilesScreen) Title() string { return titleFor(ScreenProfiles) }
 
+// CapturingInput implements InputCapturer: while the new-profile name field
+// is open, all keys must reach the textinput, not the global keymap.
+func (s *profilesScreen) CapturingInput() bool { return s.creating }
+
 func (s *profilesScreen) Bindings() []key.Binding {
 	return []key.Binding{
 		key.NewBinding(key.WithKeys("n"), key.WithHelp("n", "new profile")),
