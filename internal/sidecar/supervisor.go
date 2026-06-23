@@ -32,7 +32,7 @@ const (
 // "litellm") is not on PATH. This is the v1 hybrid-engine trade-off: LiteLLM
 // is a Python tool we shell out to until v2's native Anthropic translator
 // removes the dependency.
-var ErrBinaryNotFound = errors.New(`sidecar: litellm not found on PATH; install it with "pipx install litellm" or see https://docs.litellm.ai/docs/proxy/quick_start`)
+var ErrBinaryNotFound = errors.New(`sidecar: litellm not found on PATH; install it with "pipx install 'litellm[proxy]'" or see https://docs.litellm.ai/docs/proxy/quick_start`)
 
 // Supervisor starts, health-checks, and stops a single LiteLLM proxy
 // subprocess. It is safe for concurrent use.
