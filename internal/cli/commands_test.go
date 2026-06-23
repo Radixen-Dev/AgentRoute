@@ -14,6 +14,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Radixen-Dev/AgentRoute/internal/diagnostics"
 	"github.com/Radixen-Dev/AgentRoute/internal/openrouter"
 	"github.com/Radixen-Dev/AgentRoute/internal/platform"
 	"github.com/Radixen-Dev/AgentRoute/internal/platform/claudecode"
@@ -179,7 +180,7 @@ func TestDoctorJSONReportsAllChecks(t *testing.T) {
 		t.Fatalf("doctor: got exit %d, want 0 or %d; err=%v", exitCodeOf(t, err), ExitGeneric, err)
 	}
 
-	var checks []doctorCheck
+	var checks []diagnostics.Check
 	if jerr := json.Unmarshal([]byte(out), &checks); jerr != nil {
 		t.Fatalf("unmarshal: %v (%q)", jerr, out)
 	}
@@ -193,7 +194,7 @@ func TestDoctorJSONReportsAllChecks(t *testing.T) {
 		}
 	}
 
-	var keyCheck doctorCheck
+	var keyCheck diagnostics.Check
 	for _, c := range checks {
 		if c.Name == "openrouter-key" {
 			keyCheck = c

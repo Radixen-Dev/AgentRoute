@@ -20,8 +20,8 @@ type litellmModelEntry struct {
 }
 
 type litellmParams struct {
-	Model              string   `yaml:"model"`
-	APIKey             string   `yaml:"api_key"`
+	Model               string   `yaml:"model"`
+	APIKey              string   `yaml:"api_key"`
 	AllowedOpenAIParams []string `yaml:"allowed_openai_params,omitempty"`
 }
 
