@@ -6,16 +6,36 @@ one source of truth in code: [`internal/tui/theme/tokens.go`](internal/tui/theme
 fails CI if any other file under `internal/tui` hard-codes a hex color instead of importing a token — so
 this document and the code cannot silently drift apart.
 
+## Assets
+
+| File | Purpose |
+|---|---|
+| [`docs/assets/logo.svg`](docs/assets/logo.svg) | Square icon mark — use for favicons, app icons, avatar |
+| [`docs/assets/banner.svg`](docs/assets/banner.svg) | Wide banner — used as the README header |
+| [`docs/assets/arch.svg`](docs/assets/arch.svg) | Architecture diagram — used in README "How it works" |
+| [`docs/demo/dashboard.gif`](docs/demo/dashboard.gif) | Dashboard TUI walkthrough (generated via `make demo`) |
+| [`docs/demo/up.gif`](docs/demo/up.gif) | Plain CLI demo — `doctor` / `profiles` / `up --help` |
+| [`docs/demo/model-picker.gif`](docs/demo/model-picker.gif) | Model Picker screen walkthrough |
+
+The GIFs are generated from [`tapes/*.tape`](tapes/) using [VHS](https://github.com/charmbracelet/vhs).
+Run `make demo` to regenerate locally; see CONTRIBUTING.md for details.
+
+## Logo
+
+The mark is a routing diamond (the gateway node) with an agent icon inside — a small robot head with
+dot eyes, centered in the diamond. Three signal traces fan in from the left (agent requests); one
+thicker trace exits right (the routed output). Junction nodes mark where traces meet the diamond.
+
+The concept reads left-to-right: multiple agent signals → gateway → single routed output to OpenRouter.
+
+All elements use `AccentCyan` (`#41D6C3`) on the `Ink` (`#0F1419`) background. No secondary colors
+in the mark itself — the palette contrast does the work.
+
 ## Name & wordmark
 
 **AgentRoute** — set in monospace, with the "Route" half rendered in `AccentCyan`. The TUI's header and
 splash screen are the canonical reference for how the wordmark is split and colored
 (see [`internal/tui/header.go`](internal/tui/header.go) and [`internal/tui/splash.go`](internal/tui/splash.go)).
-
-No final logo mark or social-card image exists yet — that's a design follow-up, not something this session
-generates. If you have a screenshot or mockup you want the palette/wordmark checked against, open an issue
-or hand it to whoever picks up that follow-up; nothing here should be treated as overriding a real design
-asset once one exists.
 
 ## Palette
 
@@ -49,6 +69,16 @@ Precise, developer-direct, lightly playful — never marketing-fluffy. Error mes
 *and* the fix (see any `cli` package error string for the pattern: `"%w; run: agentroute key set --value <key>"`).
 Docs explain the *why* before the *how* where it isn't obvious (see docs/concepts.md's framing of why the
 gateway sits in front of LiteLLM even in v1).
+
+## Architecture diagram
+
+The canonical diagram is [`docs/assets/arch.svg`](docs/assets/arch.svg), rendered in README.md's
+"How it works" section. It shows four nodes left-to-right:
+
+**Claude Code → AgentRoute (diamond) → LiteLLM → OpenRouter**
+
+If the architecture changes (new sidecar, native translator, additional upstream), update
+`docs/assets/arch.svg` and `README.md` in the same PR.
 
 ## Where this applies
 

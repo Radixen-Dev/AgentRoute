@@ -1,0 +1,40 @@
+<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" width="160" height="160" role="img" aria-label="AgentRoute logo">
+  <title>AgentRoute</title>
+
+  <!-- Ink background -->
+  <rect width="80" height="80" rx="13" fill="#0F1419"/>
+
+  <!-- Agent signal traces entering the gateway -->
+  <line x1="0"  y1="26" x2="18" y2="40" stroke="#41D6C3" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="0"  y1="40" x2="18" y2="40" stroke="#41D6C3" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="0"  y1="54" x2="18" y2="40" stroke="#41D6C3" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- Routed signal exiting the gateway -->
+  <line x1="62" y1="40" x2="80" y2="40" stroke="#41D6C3" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Diamond: the routing gateway node -->
+  <polygon points="40,17 63,40 40,63 17,40"
+           fill="#171E25"
+           stroke="#41D6C3"
+           stroke-width="1.75"
+           stroke-linejoin="round"/>
+
+  <!-- Robot agent icon, head centered at (40, 40.5) -->
+  <!-- Antenna -->
+  <line x1="40" y1="33" x2="40" y2="28"
+        stroke="#41D6C3" stroke-width="1" stroke-linecap="round"/>
+  <circle cx="40" cy="27" r="1.5" fill="#41D6C3"/>
+  <!-- Head -->
+  <rect x="31" y="33" width="18" height="15" rx="2"
+        fill="#0F1419" stroke="#41D6C3" stroke-width="1"/>
+  <!-- Eyes -->
+  <circle cx="36" cy="38" r="2" fill="#41D6C3"/>
+  <circle cx="44" cy="38" r="2" fill="#41D6C3"/>
+  <!-- Mouth -->
+  <line x1="35" y1="44" x2="45" y2="44"
+        stroke="#41D6C3" stroke-width="1" stroke-linecap="round"/>
+
+  <!-- Junction nodes -->
+  <circle cx="18" cy="40" r="2.5" fill="#41D6C3"/>
+  <circle cx="62" cy="40" r="3"   fill="#41D6C3"/>
+</svg>

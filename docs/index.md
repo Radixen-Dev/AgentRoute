@@ -1,7 +1,7 @@
 # AgentRoute
 
 Route [Claude Code](https://claude.com/claude-code) through [OpenRouter](https://openrouter.ai) via a
-local gateway, with either a full animated terminal UI or a scriptable plain-mode CLI.
+local gateway, with either a TUI or a scriptable plain-mode CLI.
 
 AgentRoute is a single Go binary. It does not modify Claude Code, does not rewrite `CLAUDE.md`, and does
 not leave anything behind: it wires Claude Code to a local gateway using Claude Code's own documented
