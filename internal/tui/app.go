@@ -241,11 +241,11 @@ func globalHints(_ KeyMap, screenBindings []key.Binding) []keyHint {
 		{key: "esc", label: "back"},
 	}
 	for _, b := range screenBindings {
-		keys := b.Keys()
-		if len(keys) == 0 {
+		h := b.Help()
+		if h.Key == "" {
 			continue
 		}
-		hints = append(hints, keyHint{key: keys[0], label: b.Help().Desc})
+		hints = append(hints, keyHint{key: h.Key, label: h.Desc})
 	}
 	return hints
 }
