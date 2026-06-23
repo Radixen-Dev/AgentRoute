@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+// Package diagnostics implements the environment checks run by
+// "agentroute doctor" (both the CLI command and the TUI screen).
 package diagnostics
 
 import (
@@ -108,8 +110,8 @@ func checkLiteLLM() Check {
 // PATH-visible binary is a symlink into the venv's bin/ directory, so we
 // resolve symlinks before looking for Python alongside it.
 func litellmPython(litellmPath string) string {
-	if real, err := filepath.EvalSymlinks(litellmPath); err == nil {
-		litellmPath = real
+	if resolved, err := filepath.EvalSymlinks(litellmPath); err == nil {
+		litellmPath = resolved
 	}
 	dir := filepath.Dir(litellmPath)
 	for _, name := range []string{"python3", "python"} {
