@@ -251,8 +251,8 @@ func renderModelDetail(m openrouter.Model, s theme.Styles) string {
 	b.WriteString(formatCtx(m.ContextLength) + " tokens\n\n")
 
 	b.WriteString(s.Muted.Render("Pricing  (per 1M tokens)") + "\n")
-	b.WriteString(fmt.Sprintf("  prompt:      %s\n", formatPricePerM(m.Pricing.Prompt)))
-	b.WriteString(fmt.Sprintf("  completion:  %s\n", formatPricePerM(m.Pricing.Completion)))
+	_, _ = fmt.Fprintf(&b, "  prompt:      %s\n", formatPricePerM(m.Pricing.Prompt))
+	_, _ = fmt.Fprintf(&b, "  completion:  %s\n", formatPricePerM(m.Pricing.Completion))
 
 	return b.String()
 }
