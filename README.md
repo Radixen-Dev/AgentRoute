@@ -99,12 +99,7 @@ architecture (see [docs/concepts.md](docs/concepts.md)); v2 replaces it with a n
 
 ## How it works
 
-```
- Claude Code  ──Anthropic /v1/messages──▶  AgentRoute gateway  ──proxy──▶  LiteLLM sidecar  ──▶  OpenRouter
-(~/.claude/settings.json                  (127.0.0.1:4505,                (renders config from
- "env" block points here)                  authenticates, applies          your active profile)
-                                            your tier→model mapping)
-```
+![AgentRoute architecture](docs/assets/arch.svg)
 
 - **Gateway** — a local HTTP server that authenticates each request, rewrites the requested model alias
   (`agentroute-heavy`/`-balanced`/`-fast`) to the OpenRouter model your active profile assigns it, and logs

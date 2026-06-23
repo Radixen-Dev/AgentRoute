@@ -12,6 +12,7 @@ this document and the code cannot silently drift apart.
 |---|---|
 | [`docs/assets/logo.svg`](docs/assets/logo.svg) | Square icon mark — use for favicons, app icons, avatar |
 | [`docs/assets/banner.svg`](docs/assets/banner.svg) | Wide banner — used as the README header |
+| [`docs/assets/arch.svg`](docs/assets/arch.svg) | Architecture diagram — used in README "How it works" |
 | [`docs/demo/dashboard.gif`](docs/demo/dashboard.gif) | Dashboard TUI walkthrough (generated via `make demo`) |
 | [`docs/demo/up.gif`](docs/demo/up.gif) | Plain CLI demo — `doctor` / `profiles` / `up --help` |
 | [`docs/demo/model-picker.gif`](docs/demo/model-picker.gif) | Model Picker screen walkthrough |
@@ -71,17 +72,13 @@ gateway sits in front of LiteLLM even in v1).
 
 ## Architecture diagram
 
-The canonical ASCII diagram (kept current in [`README.md`](README.md)):
+The canonical diagram is [`docs/assets/arch.svg`](docs/assets/arch.svg), rendered in README.md's
+"How it works" section. It shows four nodes left-to-right:
 
-```
- Claude Code  ──Anthropic /v1/messages──▶  AgentRoute gateway  ──proxy──▶  LiteLLM sidecar  ──▶  OpenRouter
-(~/.claude/settings.json                  (127.0.0.1:4505,                (renders config from
- "env" block points here)                  authenticates, applies          your active profile)
-                                            your tier→model mapping)
-```
+**Claude Code → AgentRoute (diamond) → LiteLLM → OpenRouter**
 
-If the architecture changes (new sidecar, native translator, additional upstream), update both README.md
-and this copy in the same PR.
+If the architecture changes (new sidecar, native translator, additional upstream), update
+`docs/assets/arch.svg` and `README.md` in the same PR.
 
 ## Where this applies
 
