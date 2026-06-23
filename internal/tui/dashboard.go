@@ -82,9 +82,21 @@ func (s *dashboardScreen) Init() tea.Cmd {
 }
 
 type dashTickMsg struct{}
+type dashPlatStatusMsg []dashPlatEntry
 
 func dashTickCmd() tea.Cmd {
 	return tea.Tick(time.Second, func(time.Time) tea.Msg { return dashTickMsg{} })
+}
+
+func fetchPlatStatusCmd(platforms []platform.Platform) tea.Cmd {
+	return func() tea.Msg {
+		entries := make([]dashPlatEntry, len(platforms))
+		for i, p := range platforms {
+			status, err := p.Status(context.Background())
+			entries[i] = dashPlatEntry{id: p.ID(), status: status, err: err}
+		}
+		return dashPlatStatusMsg(entries)
+	}
 }
 
 type gatewayStartedMsg struct {
@@ -150,7 +162,11 @@ func (s *dashboardScreen) Update(msg tea.Msg) (Screen, tea.Cmd) {
 			s.lastReqCount = 0
 			s.spark.Push(0)
 		}
-		return s, dashTickCmd()
+		return s, tea.Batch(dashTickCmd(), fetchPlatStatusCmd(s.services.Platforms))
+
+	case dashPlatStatusMsg:
+		s.platEntries = []dashPlatEntry(msg)
+		return s, nil
 
 	case gatewayStartedMsg:
 		s.pending = ""
@@ -158,12 +174,12 @@ func (s *dashboardScreen) Update(msg tea.Msg) (Screen, tea.Cmd) {
 			return s, toast(toastErr, "start failed: "+msg.err.Error())
 		}
 		s.services.Running = msg.run
-		return s, toast(toastOK, "gateway up")
+		return s, tea.Batch(toast(toastOK, "gateway up"), fetchPlatStatusCmd(s.services.Platforms))
 
 	case gatewayStoppedMsg:
 		s.pending = ""
 		s.services.Running = nil
-		return s, toast(toastInfo, "gateway stopped")
+		return s, tea.Batch(toast(toastInfo, "gateway stopped"), fetchPlatStatusCmd(s.services.Platforms))
 
 	case tea.KeyMsg:
 		switch msg.String() {

@@ -93,7 +93,12 @@ func (t *AnthropicLiteLLMTranslator) Handler(_ Upstream, router ModelRouter, log
 			}
 			return
 		}
-		payload["model"] = model
+		// Do not rewrite payload["model"]: the alias (e.g. "agentroute-heavy")
+		// must reach LiteLLM unchanged so it can look it up in model_list, which
+		// is the only place the OpenRouter api_key and resolved model name are
+		// stored together. Overwriting with the resolved model here causes LiteLLM
+		// to receive a model it has no key for, and it falls back to Anthropic's
+		// API directly.
 
 		rewritten, err := json.Marshal(payload)
 		if err != nil {

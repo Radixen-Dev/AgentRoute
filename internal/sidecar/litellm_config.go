@@ -7,6 +7,7 @@ package sidecar
 
 import (
 	"sort"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 
@@ -19,8 +20,9 @@ type litellmModelEntry struct {
 }
 
 type litellmParams struct {
-	Model  string `yaml:"model"`
-	APIKey string `yaml:"api_key"`
+	Model              string   `yaml:"model"`
+	APIKey             string   `yaml:"api_key"`
+	AllowedOpenAIParams []string `yaml:"allowed_openai_params,omitempty"`
 }
 
 type litellmGeneralSettings struct {
@@ -39,17 +41,20 @@ type litellmConfig struct {
 // reach the sidecar directly.
 //
 // Model names in the rendered config are AgentRoute aliases (see
-// profile.Alias), matching exactly what the gateway's ModelRouter resolves
-// requests to before proxying here — so the sidecar receives a model name
-// it already has a model_list entry for.
+// profile.Alias). The gateway forwards requests with the alias intact so
+// LiteLLM can look it up here, along with the api_key, and route to OpenRouter.
 func RenderConfig(p profile.Profile, apiKey, masterKey string) ([]byte, error) {
 	cfg := litellmConfig{
 		GeneralSettings: litellmGeneralSettings{MasterKey: masterKey},
 	}
 	for tier, model := range p.Models {
 		cfg.ModelList = append(cfg.ModelList, litellmModelEntry{
-			ModelName:     profile.Alias(tier),
-			LitellmParams: litellmParams{Model: model, APIKey: apiKey},
+			ModelName: profile.Alias(tier),
+			LitellmParams: litellmParams{
+				Model:               withOpenRouterPrefix(model),
+				APIKey:              apiKey,
+				AllowedOpenAIParams: []string{"thinking", "betas"},
+			},
 		})
 	}
 	// Deterministic output: map iteration order is randomized in Go, but
@@ -60,4 +65,15 @@ func RenderConfig(p profile.Profile, apiKey, masterKey string) ([]byte, error) {
 	})
 
 	return yaml.Marshal(cfg)
+}
+
+// withOpenRouterPrefix ensures the model string has the "openrouter/" prefix
+// that LiteLLM requires to route through OpenRouter. OpenRouter's own catalog
+// returns bare provider IDs (e.g. "anthropic/claude-opus-4.8"), so profiles
+// created from the model picker won't have the prefix unless we add it here.
+func withOpenRouterPrefix(model string) string {
+	if strings.HasPrefix(model, "openrouter/") {
+		return model
+	}
+	return "openrouter/" + model
 }
