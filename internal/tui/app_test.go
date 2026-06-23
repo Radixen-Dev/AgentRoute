@@ -8,7 +8,9 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 
+	"github.com/Radixen-Dev/AgentRoute/internal/config"
 	"github.com/Radixen-Dev/AgentRoute/internal/openrouter"
+	"github.com/Radixen-Dev/AgentRoute/internal/profile"
 )
 
 func TestRenderSplashShowsWordmarkAndVersion(t *testing.T) {
@@ -44,11 +46,46 @@ func TestDashboardViewWhenGatewayDownAndNoProfile(t *testing.T) {
 	d.Update(tea.WindowSizeMsg{Width: 100, Height: 30})
 
 	out := d.View()
-	if !strings.Contains(out, "down") {
+	if !strings.Contains(out, "DOWN") {
 		t.Errorf("expected dashboard to report gateway down:\n%s", out)
 	}
 	if !strings.Contains(out, "Profiles") {
 		t.Errorf("expected dashboard to point at Profiles when none is active:\n%s", out)
+	}
+}
+
+// TestDashboardViewShowsProfileTiersPlatformsAndHealth pins the Dashboard's
+// core promise: a user can see their active profile's tier mapping, every
+// registered platform's link state, and environment health without leaving
+// the Dashboard for the Profiles, Platforms, or Doctor screens.
+func TestDashboardViewShowsProfileTiersPlatformsAndHealth(t *testing.T) {
+	services := testServices(t)
+
+	prof := profile.Profile{Name: "default", Models: map[string]string{
+		profile.TierHeavy:    "openrouter/anthropic/claude-opus-4.5",
+		profile.TierBalanced: "openrouter/anthropic/claude-sonnet-4.6",
+	}}
+	if err := profile.Save(prof); err != nil {
+		t.Fatalf("save profile: %v", err)
+	}
+	if err := config.Save(config.Config{ActiveProfile: "default", Port: config.DefaultPort}); err != nil {
+		t.Fatalf("save config: %v", err)
+	}
+
+	scr := newDashboardScreen(&services)
+	scr.Init()
+	scr, _ = scr.Update(tea.WindowSizeMsg{Width: 100, Height: 30})
+	scr, _ = scr.Update(fetchPlatStatusCmd(services.Platforms)())
+	scr, _ = scr.Update(runDoctorChecksCmd(&services)())
+
+	out := scr.View()
+	for _, want := range []string{
+		"default", "Heavy", "openrouter/anthropic/claude-opus-4.5", "Balanced", "Fast",
+		"Claude Code", "Health", "checks passing",
+	} {
+		if !strings.Contains(out, want) {
+			t.Errorf("expected dashboard to show %q:\n%s", want, out)
+		}
 	}
 }
 

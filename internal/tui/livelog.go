@@ -12,6 +12,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/Radixen-Dev/AgentRoute/internal/gateway"
+	"github.com/Radixen-Dev/AgentRoute/internal/tui/theme"
 )
 
 type liveLogScreen struct {
@@ -61,26 +62,33 @@ func dimText(services *Services, text string) string {
 	return services.Styles.Muted.Render(text)
 }
 
+// formatRequestLine renders one request-log entry as a single line, shared
+// by the full Live Log view and the Dashboard's condensed recent-activity
+// feed so the two never drift out of sync on format.
+func formatRequestLine(styles theme.Styles, e gateway.RequestEntry) string {
+	status := fmt.Sprintf("%d", e.StatusCode)
+	style := styles.OK
+	if e.Err != "" {
+		status = "ERR"
+		style = styles.Err
+	} else if e.StatusCode >= 400 {
+		style = styles.Err
+	}
+	line := fmt.Sprintf("%s  %-5s  %-22s -> %-32s  %s  %s",
+		e.Time.Format("15:04:05"), e.Wire, e.Alias, e.Model, style.Render(status), e.Duration.Round(time.Millisecond))
+	if e.Err != "" {
+		line += "  " + styles.Err.Render(e.Err)
+	}
+	return line
+}
+
 func renderRequestLog(services *Services, entries []gateway.RequestEntry) string {
 	if len(entries) == 0 {
 		return dimText(services, "no requests yet")
 	}
 	var b strings.Builder
 	for _, e := range entries {
-		status := fmt.Sprintf("%d", e.StatusCode)
-		style := services.Styles.OK
-		if e.Err != "" {
-			status = "ERR"
-			style = services.Styles.Err
-		} else if e.StatusCode >= 400 {
-			style = services.Styles.Err
-		}
-		line := fmt.Sprintf("%s  %-5s  %-22s -> %-32s  %s  %s",
-			e.Time.Format("15:04:05"), e.Wire, e.Alias, e.Model, style.Render(status), e.Duration.Round(time.Millisecond))
-		if e.Err != "" {
-			line += "  " + services.Styles.Err.Render(e.Err)
-		}
-		b.WriteString(line)
+		b.WriteString(formatRequestLine(services.Styles, e))
 		b.WriteString("\n")
 	}
 	return b.String()

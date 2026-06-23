@@ -78,6 +78,7 @@ type Running struct {
 	SidecarPort  int
 	GatewayToken string
 	Linked       bool
+	StartedAt    time.Time
 
 	serveErrCh chan error
 	cleanups   []func()
@@ -148,7 +149,7 @@ func Start(ctx context.Context, opts Options, deps Deps, logf Logf) (*Running, e
 		gatewayPort = opts.Port
 	}
 
-	r := &Running{ProfileName: profileName, Profile: prof, serveErrCh: make(chan error, 1)}
+	r := &Running{ProfileName: profileName, Profile: prof, serveErrCh: make(chan error, 1), StartedAt: time.Now()}
 	push := func(f func()) { r.cleanups = append(r.cleanups, f) }
 	unwound := false
 	unwind := func() {
