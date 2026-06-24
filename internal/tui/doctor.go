@@ -10,6 +10,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/Radixen-Dev/AgentRoute/internal/diagnostics"
+	"github.com/Radixen-Dev/AgentRoute/internal/tui/theme"
 )
 
 type doctorScreen struct {
@@ -74,5 +75,5 @@ func (s *doctorScreen) View() string {
 		}
 		out += fmt.Sprintf("%s %-16s %s\n", mark, c.Name, c.Detail)
 	}
-	return styles.Card.Width(maxInt(s.width-2, 20)).Render(out)
+	return theme.Opaque(theme.SurfaceAlt, styles.Card.Width(maxInt(s.width-2, 20)).Render(out))
 }

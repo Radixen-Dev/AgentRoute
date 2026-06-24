@@ -55,7 +55,7 @@ func renderHelpOverlay(s theme.Styles, width, height int, _ KeyMap, active Scree
 		_, _ = fmt.Fprintf(&b, "  %s  %s\n", s.HelpKey.Render(pad(fmt.Sprintf("%d", i+1), 16)), s.Help.Render(titleFor(id)))
 	}
 
-	card := s.Card.Render(b.String())
+	card := theme.Opaque(theme.SurfaceAlt, s.Card.Render(b.String()))
 	return lipgloss.Place(width, height, lipgloss.Center, lipgloss.Center, card, lipgloss.WithWhitespaceBackground(theme.Ink))
 }
 

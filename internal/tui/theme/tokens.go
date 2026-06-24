@@ -34,6 +34,7 @@ type Styles struct {
 	Border         lipgloss.Style
 	Card           lipgloss.Style
 	CardTitle      lipgloss.Style
+	Accent         lipgloss.Style
 	Muted          lipgloss.Style
 	Selected       lipgloss.Style
 	OK             lipgloss.Style
@@ -69,6 +70,7 @@ func New() Styles {
 			BorderForeground(Border).
 			Padding(0, 1),
 		CardTitle: lipgloss.NewStyle().Foreground(AccentBlue).Bold(true),
+		Accent:    lipgloss.NewStyle().Foreground(AccentCyan).Bold(true),
 		Muted:     lipgloss.NewStyle().Foreground(Muted),
 		Selected:  lipgloss.NewStyle().Foreground(Ink).Background(AccentCyan).Bold(true),
 		OK:        lipgloss.NewStyle().Foreground(OK),

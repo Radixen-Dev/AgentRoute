@@ -55,5 +55,5 @@ func renderSplash(s theme.Styles, width, height int, state *splashState) string 
 	sub := s.Muted.Render(version.String())
 	block := lipgloss.JoinVertical(lipgloss.Center, wordmark, sub)
 
-	return lipgloss.Place(width, height, lipgloss.Center, lipgloss.Center, block, lipgloss.WithWhitespaceBackground(theme.Ink))
+	return lipgloss.Place(width, height, lipgloss.Center, lipgloss.Center, theme.Opaque(theme.Ink, block), lipgloss.WithWhitespaceBackground(theme.Ink))
 }

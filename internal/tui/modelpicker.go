@@ -227,7 +227,7 @@ func (s *modelPickerScreen) View() string {
 	if item, ok := s.list.SelectedItem().(modelItem); ok {
 		detailContent = renderModelDetail(item.m, styles)
 	}
-	detailPanel := styles.Card.Width(s.detailWidth - 2).Render(detailContent)
+	detailPanel := theme.Opaque(theme.SurfaceAlt, styles.Card.Width(s.detailWidth-2).Render(detailContent))
 
 	return lipgloss.JoinHorizontal(lipgloss.Top, listView, "  ", detailPanel)
 }
