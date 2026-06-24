@@ -10,9 +10,11 @@ import (
 
 	"github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	zone "github.com/lrstanley/bubblezone"
 
 	"github.com/Radixen-Dev/AgentRoute/internal/tui/anim"
+	"github.com/Radixen-Dev/AgentRoute/internal/tui/theme"
 )
 
 // Model is the TUI's root Bubble Tea model.
@@ -231,6 +233,15 @@ func (m Model) View() string {
 	if m.showHelp {
 		view = renderHelpOverlay(m.services.Styles, m.width, m.height, m.keymap, m.screen)
 	}
+
+	// Every screen composes colored fragments inside Background()-styled
+	// containers (Card, Header, StatusBar, ...); Opaque patches the
+	// resulting reset-clobbering seams (see its doc comment), and Place
+	// backstops any leftover gap — a screen shorter or narrower than the
+	// terminal, for instance — with the same background instead of
+	// whatever the terminal's own default happens to be.
+	bg := m.services.Styles.App.GetBackground()
+	view = lipgloss.Place(m.width, m.height, lipgloss.Left, lipgloss.Top, theme.Opaque(bg, view), lipgloss.WithWhitespaceBackground(bg))
 	return zone.Scan(view)
 }
 

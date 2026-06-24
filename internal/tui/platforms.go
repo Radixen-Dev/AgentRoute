@@ -12,6 +12,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 
 	"github.com/Radixen-Dev/AgentRoute/internal/platform"
+	"github.com/Radixen-Dev/AgentRoute/internal/tui/theme"
 )
 
 // platformEntry holds the live detect + link status for one registered
@@ -209,10 +210,10 @@ func (s *platformsScreen) View() string {
 	w := maxInt(s.width-2, 40)
 
 	if s.loading {
-		return styles.Card.Width(w).Render(styles.Muted.Render("loading platforms..."))
+		return theme.Opaque(theme.SurfaceAlt, styles.Card.Width(w).Render(styles.Muted.Render("loading platforms...")))
 	}
 	if len(s.entries) == 0 {
-		return styles.Card.Width(w).Render(styles.Muted.Render("no platforms registered"))
+		return theme.Opaque(theme.SurfaceAlt, styles.Card.Width(w).Render(styles.Muted.Render("no platforms registered")))
 	}
 
 	var b strings.Builder
@@ -281,5 +282,5 @@ func (s *platformsScreen) View() string {
 		}
 	}
 
-	return styles.Card.Width(w).Render(b.String())
+	return theme.Opaque(theme.SurfaceAlt, styles.Card.Width(w).Render(b.String()))
 }

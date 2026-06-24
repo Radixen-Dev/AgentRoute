@@ -9,6 +9,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/Radixen-Dev/AgentRoute/internal/profile"
+	"github.com/Radixen-Dev/AgentRoute/internal/tui/theme"
 )
 
 var rolesOrder = []struct{ tier, label string }{
@@ -87,7 +88,7 @@ func (s *roleMapperScreen) View() string {
 		}
 		out += line + "\n"
 	}
-	return styles.Card.Width(maxInt(s.width-2, 20)).Render(out)
+	return theme.Opaque(theme.SurfaceAlt, styles.Card.Width(maxInt(s.width-2, 20)).Render(out))
 }
 
 func maxInt(a, b int) int {

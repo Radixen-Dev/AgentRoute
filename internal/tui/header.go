@@ -50,7 +50,7 @@ func renderHeader(s theme.Styles, width int, screenTitle string, gatewayUp bool)
 		gap = 1
 	}
 	line := left + lipgloss.NewStyle().Width(gap).Render("") + pill
-	return s.Header.Width(width).Render(line)
+	return theme.Opaque(theme.Surface, s.Header.Width(width).Render(line))
 }
 
 // renderStatusBar draws the k9s-style "key: action" hint line plus any
@@ -58,7 +58,7 @@ func renderHeader(s theme.Styles, width int, screenTitle string, gatewayUp bool)
 func renderStatusBar(s theme.Styles, width int, hints string, t *activeToast) string {
 	left := s.StatusBar.Render(hints)
 	if t == nil {
-		return s.StatusBar.Width(width).Render(hints)
+		return theme.Opaque(theme.Surface, s.StatusBar.Width(width).Render(hints))
 	}
 
 	style := s.Muted
@@ -75,7 +75,7 @@ func renderStatusBar(s theme.Styles, width int, hints string, t *activeToast) st
 	if gap < 1 {
 		gap = 1
 	}
-	return s.StatusBar.Width(width).Render(left + lipgloss.NewStyle().Width(gap).Render("") + right)
+	return theme.Opaque(theme.Surface, s.StatusBar.Width(width).Render(left+lipgloss.NewStyle().Width(gap).Render("")+right))
 }
 
 type activeToast struct {

@@ -392,7 +392,7 @@ func (s *dashboardScreen) renderGatewayCard(styles theme.Styles, width int) stri
 	button := zone.Mark(dashGatewayZone, styles.Selected.Render(" "+buttonLabel+" "))
 
 	body := line1 + "\n" + line2 + "\n\n" + button
-	return styles.Card.Width(width - 2).Render(styles.CardTitle.Render("Gateway") + "\n" + body)
+	return theme.Opaque(theme.SurfaceAlt, styles.Card.Width(width-2).Render(styles.CardTitle.Render("Gateway")+"\n"+body))
 }
 
 func (s *dashboardScreen) renderProfileCard(styles theme.Styles, width int) string {
@@ -413,7 +413,7 @@ func (s *dashboardScreen) renderProfileCard(styles theme.Styles, width int) stri
 			body += "\n" + lipgloss.NewStyle().Width(20).Render(r.label) + model
 		}
 	}
-	return styles.Card.Width(width - 2).Render(styles.CardTitle.Render("Profile & Tiers") + "\n" + body)
+	return theme.Opaque(theme.SurfaceAlt, styles.Card.Width(width-2).Render(styles.CardTitle.Render("Profile & Tiers")+"\n"+body))
 }
 
 func versionSuffix(v string) string {
@@ -449,7 +449,7 @@ func (s *dashboardScreen) renderPlatformsCard(styles theme.Styles, width int) st
 			body += "\n" + lipgloss.NewStyle().Width(14).Render("") + styles.Muted.Render("config: "+pe.status.ConfigPath)
 		}
 	}
-	return styles.Card.Width(width - 2).Render(styles.CardTitle.Render("Platforms") + "\n" + body)
+	return theme.Opaque(theme.SurfaceAlt, styles.Card.Width(width-2).Render(styles.CardTitle.Render("Platforms")+"\n"+body))
 }
 
 func (s *dashboardScreen) renderActivityCard(styles theme.Styles, width int) string {
@@ -474,13 +474,13 @@ func (s *dashboardScreen) renderActivityCard(styles theme.Styles, width int) str
 
 	body := s.spark.View() + "\n" + feed
 	hint := styles.Muted.Render("  (full history: 5)")
-	return styles.Card.Width(width - 2).Render(styles.CardTitle.Render("Request activity") + hint + "\n" + body)
+	return theme.Opaque(theme.SurfaceAlt, styles.Card.Width(width-2).Render(styles.CardTitle.Render("Request activity")+hint+"\n"+body))
 }
 
 func (s *dashboardScreen) renderHealthCard(styles theme.Styles, width int) string {
 	header := styles.CardTitle.Render("Health")
 	if s.checksLoading {
-		return styles.Card.Width(width - 2).Render(header + "\n" + styles.Muted.Render("running checks..."))
+		return theme.Opaque(theme.SurfaceAlt, styles.Card.Width(width-2).Render(header+"\n"+styles.Muted.Render("running checks...")))
 	}
 
 	pass := 0
@@ -504,7 +504,7 @@ func (s *dashboardScreen) renderHealthCard(styles theme.Styles, width int) strin
 	if len(failing) > 0 {
 		body += "\n" + styles.Muted.Render("press 7 for full diagnostics")
 	}
-	return styles.Card.Width(width - 2).Render(header + "\n" + body)
+	return theme.Opaque(theme.SurfaceAlt, styles.Card.Width(width-2).Render(header+"\n"+body))
 }
 
 // splitWidth divides total (an outer card width, border included — see the

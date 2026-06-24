@@ -13,6 +13,7 @@ import (
 
 	"github.com/Radixen-Dev/AgentRoute/internal/config"
 	"github.com/Radixen-Dev/AgentRoute/internal/profile"
+	"github.com/Radixen-Dev/AgentRoute/internal/tui/theme"
 )
 
 type profileItem struct {
@@ -168,7 +169,7 @@ func clearConfirmDelAfter(name string, d time.Duration) tea.Cmd {
 
 func (s *profilesScreen) View() string {
 	if s.creating {
-		return s.services.Styles.Card.Render("New profile name:\n\n" + s.input.View())
+		return theme.Opaque(theme.SurfaceAlt, s.services.Styles.Card.Render("New profile name:\n\n"+s.input.View()))
 	}
 	if s.loadErr != nil {
 		return s.services.Styles.Err.Render("failed to list profiles: " + s.loadErr.Error())
